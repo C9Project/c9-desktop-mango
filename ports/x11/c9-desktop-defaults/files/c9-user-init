@@ -62,7 +62,7 @@ while IFS= read -r rel; do copy_missing "$rel"; done <<'FILES'
 .config/mango/config.conf
 .config/waybar/config.jsonc
 .config/waybar/style.css
-.config/foot/foot.ini
+.config/rio/config.toml
 .config/fuzzel/fuzzel.ini
 .config/mako/config
 .config/gtk-3.0/settings.ini

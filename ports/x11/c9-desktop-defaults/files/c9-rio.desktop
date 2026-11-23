@@ -1,0 +1,11 @@
+# SPDX-License-Identifier: BSD-2-Clause
+[Desktop Entry]
+Type=Application
+Name=Rio Terminal
+GenericName=Terminal Emulator
+Comment=Open the C9 terminal
+Exec=rio
+TryExec=rio
+Icon=utilities-terminal
+Terminal=false
+Categories=System;TerminalEmulator;

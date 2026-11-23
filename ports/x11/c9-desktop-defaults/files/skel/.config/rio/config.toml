@@ -1,0 +1,20 @@
+# SPDX-License-Identifier: BSD-2-Clause
+# C9 defaults for Rio 0.5.30. Existing user files are never replaced.
+margin = [10]
+
+[fonts]
+family = "DejaVu Sans Mono"
+size = 11.0
+
+[colors]
+background = "#17212b"
+foreground = "#e6edf3"
+cursor = "#ffbd69"
+black = "#17212b"
+red = "#f26b6b"
+green = "#93c98b"
+yellow = "#ffbd69"
+blue = "#79b8ff"
+magenta = "#c59bdb"
+cyan = "#7bc8c6"
+white = "#e6edf3"

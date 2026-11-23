@@ -2,8 +2,14 @@
 
 This guide covers changing the C9 sources, deploying them to the existing
 Poudriere server, rebuilding packages, and producing another offline ISO.
-After deploying edits, [Automated rebuild](AUTOMATED-REBUILD.md) performs
-the package-to-ISO sequence with retained logs and compatible package reuse.
+**The current 0.2.1 Rio branch is a source-only candidate.** Only source edits
+and local checks are in scope; the server is unavailable and no deployment,
+package build or ISO run has been performed. Review [Rio terminal](RIO-TERMINAL.md)
+before using the later deployment/build sections. Its dependency count is
+deliberately `unreviewed`, so it cannot yet pass final ISO acceptance.
+
+For a later approved deployment, [Automated rebuild](AUTOMATED-REBUILD.md)
+performs the package-to-ISO sequence with retained logs and compatible package reuse.
 The user reported successful installation on the Dell Latitude 5591 on
 22 November 2026. Detailed graphics and application acceptance was not
 separately reported.
@@ -17,19 +23,20 @@ separately reported.
 | Applications, desktop defaults, artwork, startup scripts, services, or driver dependencies | C9 package release, verification, then ISO |
 | FreeBSD release/patch level, architecture, or the base ports revision | Deliberately prepare and validate a new platform baseline; see section 8 |
 
-The quickest repeat of the working ISO is in section 5. For changed packages,
+The quickest repeat of the existing **0.2.0** ISO is in section 5, using its
+matching retained source rather than this Rio branch. For changed packages,
 follow sections 2–4 and 6. The current scripts enforce a particular release;
 changing a configuration value alone does not update every validation rule.
 
-### Working baseline
+### Recorded 0.2.0 baseline and current checkout
 
-| Item | Current value |
+| Item | Recorded value |
 | --- | --- |
-| Local source | `F:\C9\source\c9-desktop-mango-0.2.0-zfs-20261122T153649Z` |
+| Local checkout, now carrying the 0.2.1 source branch | `F:\C9\source\c9-desktop-mango-0.2.0-zfs-20261122T153649Z` |
 | SSH / root commands | `ssh daniel@192.168.178.55` / `doas` |
-| Current server source | `/usr/local/c9/c9-desktop-mango-0.2.0` |
+| Retained 0.2.0 server source | `/usr/local/c9/c9-desktop-mango-0.2.0` |
 | Package jail / tree / set | `c9151amd64` / `default` / `c9` |
-| Overlay | `c9overlay`; currently points at the server source's `ports/` |
+| Recorded overlay | `c9overlay`; points at the recorded server source's `ports/` |
 | FreeBSD | `15.1-RELEASE-p6`, amd64, OSVERSION 1501000 |
 | Ports commit | `e7bc56a5d30dc24ce2e7990926836699cbd34e55` |
 | Successful package build | `c9release-20261122T094945Z` |
@@ -41,6 +48,9 @@ changing a configuration value alone does not update every validation rule.
 The existing package jail, ports tree, distfiles, compiler cache and signing
 key can be reused for changes on this same FreeBSD baseline. Keep the
 registered overlay and build configuration unchanged while a job is running.
+The old source-directory names and p6 preparation paths remain valid evidence;
+they do not imply the local 0.2.1 branch has been deployed. Recheck live server
+state before any future build.
 
 ## 2. Make the change in the source tree
 
@@ -53,7 +63,8 @@ All paths in this table are relative to the source root.
 | Office applications | `ports/editors/c9-apps-office/Makefile` |
 | Core desktop components | `ports/x11/c9-desktop-mango/Makefile` |
 | Groups installed by the workstation meta-port | `ports/x11/c9-workstation/Makefile` |
-| Mango, Waybar, Foot, Fuzzel, Mako and GTK defaults | `ports/x11/c9-desktop-defaults/files/skel/.config/` |
+| Mango, Waybar, Rio, Fuzzel, Mako and GTK defaults | `ports/x11/c9-desktop-defaults/files/skel/.config/` |
+| C9 Rio launcher entry | `ports/x11/c9-desktop-defaults/files/c9-rio.desktop` and that port's `pkg-plist` |
 | Session launch and background applications | That port's `files/c9-mango-session`, `files/session-apps`, and `files/c9-mango.desktop` |
 | Wallpaper and logo | `ports/x11-themes/c9-artwork/files/wallpaper.svg` and `c9-logo.svg`; the PNG is generated during the package build |
 | SDDM, services and explicit system setup | `ports/sysutils/c9-system-config/files/` |
@@ -88,6 +99,10 @@ overwrite the Dell user's existing configuration. A new template also needs
 an entry in that port's `pkg-plist`, the fixed file list in
 `files/c9-user-init`, and the relevant test expectations. For an existing
 user, review and merge the changed template into their configuration.
+For Rio, this includes the existing Mango terminal binding and Fuzzel terminal
+command; adding the Rio template does not rewrite either file. Follow the
+opt-in migration in [Rio terminal](RIO-TERMINAL.md), preserving Foot settings
+and verifying the new terminal before considering removal of the old package.
 
 For Python, use the port's `USES=python:3.12,run` mechanism; the generic
 `lang/python3` meta-port is not a valid substitute dependency here. Keep
@@ -101,44 +116,55 @@ profile/setup logic, and its package/plist entries.
 The current build gates require **every C9 package's full version to equal
 C9_VERSION** in `installer/release.conf`. Editing packaged files while
 keeping the same package identity can cause old packages to be reused.
-A single `PORTREVISION=1` produces `0.2.0_1`, which fails the existing
-exact `0.2.0` gate.
+A single `PORTREVISION=1` on this candidate produces `0.2.1_1`, which fails
+its exact `0.2.1` gate.
 
-For a new package release, for example **0.2.1**:
+The coordinated **0.2.1** source changes follow these rules. A later release
+needs the same review with its own version:
 
 1. Set DISTVERSION to 0.2.1 in all C9 Makefiles named by
    `poudriere/c9-release.list` (currently ten), including any new C9 ports.
    Reset a C9 PORTREVISION when changing
    DISTVERSION, if one was added. Leave unrelated upstream port versions alone.
-2. Set `C9_VERSION=0.2.1` and update the internal `c9-*>=0.2.0`
-   dependency minimums to the new release.
+2. Set `C9_VERSION=0.2.1` and update the internal C9 dependency minimums
+   to `>=0.2.1`.
 3. Keep the existing image jail when the FreeBSD baseline is unchanged.
    Section 6 checks its retained kernel/payload proof separately from the
    new package build ID. A platform change requires new prepared inputs.
-4. If naming the image `C9MANGO021`, set C9_IMAGE_NAME and update the
+4. Use `C9_IMAGE_NAME=C9MANGO021` and update the
    filename, volume-label and fstab expectations in `tests/verify-iso.sh`.
-5. Update that verifier's C9 version and package/origin table. Review its
-   expected **545-package** combined installation plan after dependency
-   changes; replace the expected count only after reviewing the new plan.
-6. Review `tests/collect-installed-evidence.sh`: it pins the old C9
-   version/build ID, test account, VirtualBox profile, signing key, application
-   checks and templates. It is a test-VM collector, not an unchanged Dell
-   acceptance script. Preserve the original dated evidence.
+5. Update that verifier's C9 version and package/origin table. The earlier
+   **545-package** combined installation plan belongs to 0.2.0. This candidate
+   sets `C9_EXPECTED_INSTALL_PACKAGE_COUNT=unreviewed` in release.conf. The
+   verifier retains the future actual plan and fails acceptance until its
+   dependency changes are reviewed and a positive expected count is committed.
+   Do not guess a count or automatically accept the observed value. The ten
+   exact C9 identities, signatures and archive-hash checks remain required.
+6. Preserve `tests/collect-installed-evidence.sh` as the historical 0.2.0
+   collector. It pins that release's build ID, test account, VirtualBox profile,
+   signing key, Foot and original templates. Prepare a separate collector for
+   later 0.2.1 installation tests once their actual inputs exist; do not relabel
+   the old checks or dated evidence as Rio validation.
 7. Record the intended changes in CHANGELOG.md.
 
-This rebuilds the small C9 packages together; compatible upstream packages
-are still reused. Installer-only edits that do not change packaged contents
-can keep the existing 0.2.0 package release and use section 5.
+When a build is authorized, this rebuilds the small C9 packages together;
+compatible upstream packages are still reused. Installer-only edits made from
+the retained 0.2.0 source can keep its package release and use section 5.
+The Rio dependency/default changes require new packages and cannot use that path.
 
 For a change only to a third-party overlay port, such as a Firefox patch,
 give that port an appropriate version/revision change. The exact-version
-gate applies to C9 packages, so unchanged C9 ports can remain at 0.2.0.
+gate applies to C9 packages, so unchanged C9 ports retain their matching
+`C9_VERSION` (0.2.0 on the retained release, 0.2.1 on this branch).
 This still needs a new successful package build and verified image
 inputs from section 6. For build
 option changes, install the updated policy with configure and review the
 plan to confirm the intended packages will rebuild.
 
 ## 4. Archive and deploy the edited sources
+
+The current task stops at local source preparation and checks. The commands
+below describe a future approved deployment; they have not been run for Rio.
 
 Use the existing archive helper so hidden `.config` templates and the
 updated MANIFEST.sha256 are included. In **Windows PowerShell**:
@@ -194,6 +220,7 @@ without changing the package overlay.
 
 This path applies to unchanged packages on the current p6 baseline. It uses
 the original successful package build and existing prepared image jail.
+It requires matching 0.2.0 source and does **not** apply to the 0.2.1 Rio branch.
 Use the freshly deployed source directory for installer edits, or the
 current canonical source for an unchanged repeat. The default below applies
 only when c9_source is unset; it preserves the new directory selected in
@@ -204,6 +231,7 @@ set -eu
 c9_source=${c9_source:-/usr/local/c9/c9-desktop-mango-0.2.0}
 printf 'Installer source: %s\n' "$c9_source"
 cd "$c9_source"
+grep -qx 'C9_VERSION=0.2.0' installer/release.conf
 c9_build_id=c9release-20261122T094945Z
 c9_kernel_record=/usr/local/c9/image-inputs/c9-0.2.0-p6-20261122T094945Z
 c9_payload=/usr/local/c9/releases/c9-0.2.0-zfs-20261122T153649Z/inputs/distributions
@@ -233,6 +261,9 @@ record and may be older; its exact hashes must still match the image inputs.
 Use the coordinated source changes from section 3 and the new deployed
 directory from section 4. Keep the same package jail, pinned ports tree
 and resource settings for this workflow.
+These are future release steps, not completed validation of the source-only
+Rio candidate. Its first actual dependency plan still needs review before
+the `unreviewed` count can be replaced and ISO acceptance can pass.
 
 **This master is also the Dell's live update repository.** Poudriere
 publishes before the C9 wrapper verifies its result. The current
@@ -420,7 +451,7 @@ the wrapper rejects using it as a retry. Do not treat an unpublished
 | Ports/jail version differs | Restore the intended pinned inputs or complete a deliberate platform migration |
 | Kernel-record package build differs | Use the matching fresh preparation record from section 6 |
 | Kernel payload hash differs | Do not reuse an old payload with a newly built image-jail kernel |
-| Combined package-count check fails | Review the new dependency plan and update the release-specific expectation |
+| Combined package count is unreviewed or differs | Review the retained dependency plan, commit the reviewed numeric expectation, and verify a new candidate; never copy the old 545 count blindly |
 | Signature/archive verification fails | Check the signer, public key and archive integrity; retain verification |
 | Installer reports a home-ownership failure | Inspect actual ZFS mounts; use [ZFS recovery](ZFS-INSTALL-RECOVERY.md), not recursive chown |
 

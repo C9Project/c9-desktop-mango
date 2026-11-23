@@ -1,13 +1,16 @@
 # C9 desktop integration
 
-C9 0.2.0 provides an authenticated SDDM login and a Mango session with Waybar,
-Fuzzel, Mako, Swaybg, and Foot. The first configuration targets Mango 0.18.5
-and Waybar 0.16.0. A successful package build is not evidence that graphics,
-authentication, suspend, or all hardware profiles have passed runtime tests.
+The C9 0.2.1 source candidate keeps the authenticated SDDM login and Mango
+session with Waybar, Fuzzel, Mako and Swaybg, and selects Rio as the terminal.
+It targets Mango 0.18.5 and Waybar 0.16.0. This change is prepared and checked
+locally only; no 0.2.1 packages, ISO or native graphics results are available.
+The recorded 0.2.0 builds and installation tests used Foot and remain separate
+evidence. See [Rio terminal](RIO-TERMINAL.md) for package and migration details.
 
 ## Install and configure
 
-Install the C9 workstation and matching hardware package, then create a
+After a package release has passed its build and validation gates, install
+the C9 workstation and matching hardware package, then create a
 nonroot account with a nonempty password. On the target system, or inside the
 installer's target chroot, run:
 
@@ -56,6 +59,12 @@ configuration never gets overwritten by a package upgrade.
 An existing alternate Mango/Waybar configuration name is not shadowed by a
 new default. A custom `XDG_CONFIG_HOME` or symlinked home is left untouched.
 
+The Rio change follows the same rule: existing Mango and Fuzzel files retain
+their Foot commands, and existing Foot configuration is not deleted.
+Changing those commands is an opt-in user migration, described in
+[Rio terminal](RIO-TERMINAL.md). The shortcuts below describe fresh 0.2.1
+defaults, not an automatic change to an installed 0.2.0 account.
+
 The launcher honors an existing Mango configuration beneath `XDG_CONFIG_HOME`
 and validates it with `mango -c PATH -p`. Configuration errors return to the
 login screen instead of discarding the user's changes. Templates target the
@@ -64,7 +73,7 @@ with renamed keys need deliberate migration.
 
 | Shortcut | Action |
 | --- | --- |
-| Super+Enter | Foot terminal |
+| Super+Enter | Rio terminal |
 | Super+Space | Fuzzel launcher |
 | Super+E / Super+B | File manager / browser from Essential applications |
 | Super+Q / Super+F | Close window / toggle fullscreen |
@@ -79,6 +88,10 @@ configuration to match the installed system. No automatic idle/suspend policy
 is configured in this prototype.
 
 ## Hardware boundaries
+
+The candidate uses the pinned FreeBSD Rio port's standard CPU renderer,
+without a custom GPU-feature override. This does not establish Rio runtime
+acceptance or change Mango's graphics requirements below.
 
 The Intel profile installs `drm-612-kmod` and Kaby Lake firmware for the Dell
 Latitude 5591's UHD 630 and enables `i915kms`. Setup requires the installed

@@ -1,7 +1,7 @@
 [
 { type: install
   message: <<EOM
-C9 essential applications are installed: Firefox, Foot, Thunar, and Zathura.
+C9 essential applications are installed: Firefox, Rio, Thunar, and Zathura.
 
 Zathura opens PDF documents through its MuPDF backend.
 Its MuPDF backend conflicts with the alternative Zathura Poppler backend.
