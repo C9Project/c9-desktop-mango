@@ -1,0 +1,14 @@
+[
+{ type: install
+  message: <<EOM
+C9 Mango desktop packages are installed.
+
+The C9 installer applies the hardware profile and initializes each user's
+settings. For a manual installation, review c9-system-setup and the C9 build
+documentation before enabling the login screen.
+
+C9 requires authentication before desktop access. Automatic login is disabled.
+Installing packages alone does not verify graphics-driver compatibility.
+EOM
+}
+]

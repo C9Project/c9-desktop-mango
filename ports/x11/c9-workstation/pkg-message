@@ -1,0 +1,14 @@
+[
+{ type: install
+  message: <<EOM
+The default C9 workstation package selection is installed.
+
+Optional groups:
+  c9-apps-development  VS Code, Git, Python, Node.js, npm, and CMake
+  c9-apps-office       LibreOffice
+
+The C9 installer provides these as separate choices. Hardware and login
+configuration are handled by the selected C9 setup profile.
+EOM
+}
+]

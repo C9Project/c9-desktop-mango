@@ -1,0 +1,3 @@
+#!/bin/sh
+# bsdinstall's checked C9 hook. Keep diagnostics after a failed attempt.
+exec /usr/local/libexec/c9/install-target "$@"

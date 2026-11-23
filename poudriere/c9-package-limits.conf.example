@@ -1,0 +1,17 @@
+# Approved package-specific exceptions: Electron 2026-11-16, VS Code 2026-11-22.
+# Destination: /usr/local/etc/poudriere.d/c9151amd64-default-c9-poudriere.conf
+# Poudriere 3.4.8 expresses these per-process virtual-address limits in GiB.
+# This does not allocate that quantity of physical RAM.
+MAX_MEMORY=8
+MAX_FILES=2048
+
+# Chromium 150's full V8 sandbox needs 1376 GiB of reserved virtual addresses
+# plus the process's other mappings. Keep the standard V8 sandbox enabled.
+# Poudriere applies this supported override only to the electron43 package.
+MAX_MEMORY_electron43=2048
+
+# VS Code's native TypeScript compiler exceeded 8 GiB even with one checker.
+# Retain the default for other packages. The pinned VS Code port additionally
+# documents this required open-file ceiling in its pre-everything message.
+MAX_MEMORY_vscode=16
+MAX_FILES_vscode=8192

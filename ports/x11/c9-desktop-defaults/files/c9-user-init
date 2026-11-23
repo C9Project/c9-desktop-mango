@@ -1,0 +1,71 @@
+#!/bin/sh
+# SPDX-License-Identifier: BSD-2-Clause
+# Run as the account being initialized. Never recursively chown a home.
+set -eu
+PATH=/bin:/usr/bin:/usr/local/bin
+export PATH
+umask 022
+
+fail() { printf 'c9-user-init: %s\n' "$*" >&2; exit 1; }
+[ "$(id -u)" -ne 0 ] || fail 'run this as the desktop user, not root'
+[ "$#" -eq 0 ] || fail 'usage: c9-user-init'
+case ${HOME:-} in /*) ;; *) fail 'HOME must be an absolute path' ;; esac
+[ -d "$HOME" ] || fail 'HOME must be a directory'
+[ "$(stat -f %u "$HOME")" = "$(id -u)" ] || fail 'HOME is not owned by this user'
+if [ -L "$HOME" ]; then
+    printf 'Preserving symlinked home: %s\n' "$HOME"
+    exit 0
+fi
+if [ "${XDG_CONFIG_HOME:-$HOME/.config}" != "$HOME/.config" ]; then
+    printf 'Preserving custom XDG_CONFIG_HOME: %s\n' "$XDG_CONFIG_HOME"
+    exit 0
+fi
+templates=/usr/local/share/c9/skel
+[ -d "$templates" ] || fail 'installed C9 templates are missing'
+
+# A customized path (including any symlink ancestor) is left alone. This also
+# prevents a root installer from accidentally following a user's symlinks:
+# the installer invokes this helper through su as that user.
+copy_missing() {
+    rel=$1
+    # Do not shadow an application's alternate existing configuration name.
+    case $rel in
+        .config/mango/config.conf)
+            [ ! -e "$HOME/.config/mango/config.toml" ] && [ ! -L "$HOME/.config/mango/config.toml" ] || return 0 ;;
+        .config/waybar/config.jsonc)
+            [ ! -e "$HOME/.config/waybar/config" ] && [ ! -L "$HOME/.config/waybar/config" ] || return 0 ;;
+    esac
+    parent=${rel%/*}
+    target_parent=$HOME
+    old_ifs=$IFS
+    IFS=/
+    set -f
+    set -- $parent
+    IFS=$old_ifs
+    set +f
+    for component do
+        target_parent=$target_parent/$component
+        if [ -L "$target_parent" ] || { [ -e "$target_parent" ] && [ ! -d "$target_parent" ]; }; then
+            printf 'Preserving customized path: %s\n' "$target_parent"
+            return
+        fi
+        [ -d "$target_parent" ] || mkdir "$target_parent"
+    done
+    target=$HOME/$rel
+    [ ! -e "$target" ] && [ ! -L "$target" ] || return 0
+    # noclobber protects files created between the existence check and write.
+    (set -C; cat "$templates/$rel" > "$target") || fail "could not initialize $target"
+    printf 'Initialized %s\n' "$target"
+}
+
+while IFS= read -r rel; do copy_missing "$rel"; done <<'FILES'
+.config/mango/config.conf
+.config/waybar/config.jsonc
+.config/waybar/style.css
+.config/foot/foot.ini
+.config/fuzzel/fuzzel.ini
+.config/mako/config
+.config/gtk-3.0/settings.ini
+.config/xdg-desktop-portal/mango-portals.conf
+.config/mimeapps.list
+FILES

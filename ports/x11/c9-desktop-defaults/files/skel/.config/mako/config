@@ -1,0 +1,11 @@
+# SPDX-License-Identifier: BSD-2-Clause
+font=DejaVu Sans 11
+background-color=#17212bf5
+text-color=#e6edf3
+border-color=#ffbd69
+border-size=2
+border-radius=8
+padding=12
+default-timeout=7000
+anchor=top-right
+margin=44,12,12

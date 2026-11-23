@@ -1,0 +1,15 @@
+bin/c9-user-init
+bin/c9-mango-session
+libexec/c9/session-apps
+%%DATADIR%%/skel/.config/mango/config.conf
+%%DATADIR%%/skel/.config/waybar/config.jsonc
+%%DATADIR%%/skel/.config/waybar/style.css
+%%DATADIR%%/skel/.config/foot/foot.ini
+%%DATADIR%%/skel/.config/fuzzel/fuzzel.ini
+%%DATADIR%%/skel/.config/mako/config
+%%DATADIR%%/skel/.config/gtk-3.0/settings.ini
+%%DATADIR%%/skel/.config/xdg-desktop-portal/mango-portals.conf
+%%DATADIR%%/skel/.config/mimeapps.list
+share/c9/sessions/wayland/c9-mango.desktop
+share/wayland-sessions/c9-mango.desktop
+@dir share/c9/sessions/empty

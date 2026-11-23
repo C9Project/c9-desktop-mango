@@ -1,0 +1,36 @@
+#!/bin/sh
+# SPDX-License-Identifier: BSD-2-Clause
+# Mango owns this process group through -s. Keep children in the foreground
+# (no daemon/service wrappers), so logout stops only this session's programs.
+set -u
+PATH=/usr/local/bin:/usr/bin:/bin
+export PATH
+[ "$(id -u)" -ne 0 ] || exit 1
+[ -n "${WAYLAND_DISPLAY:-}" ] || exit 1
+pids=
+start() { "$@" </dev/null >&2 & pids="$pids $!"; }
+cleanup() {
+    trap - EXIT HUP INT TERM
+    for pid in $pids; do kill "$pid" 2>/dev/null || :; done
+    # All known child processes are also in Mango's startup process group.
+}
+trap cleanup EXIT
+trap 'exit 0' HUP INT TERM
+
+config_root=${XDG_CONFIG_HOME:-$HOME/.config}
+if [ ! -e "$config_root/user-dirs.dirs" ] && [ ! -L "$config_root/user-dirs.dirs" ]; then
+    xdg-user-dirs-update || :
+fi
+dbus-update-activation-environment WAYLAND_DISPLAY DISPLAY XDG_CURRENT_DESKTOP XDG_SESSION_TYPE || :
+start waybar
+start mako
+start swaybg -i /usr/local/share/backgrounds/c9/wallpaper.png -m fill
+# PipeWire here supplies the screen-capture service; PulseAudio remains in
+# charge of audio through its normal per-user activation when installed.
+if command -v pipewire >/dev/null 2>&1; then start pipewire; fi
+if [ -x /usr/local/libexec/polkit-gnome-authentication-agent-1 ]; then
+    start /usr/local/libexec/polkit-gnome-authentication-agent-1
+fi
+# Portal services use D-Bus activation after the environment import above.
+# Consume Mango's status pipe until logout, rather than filling its buffer.
+while IFS= read -r status; do :; done

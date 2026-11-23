@@ -1,0 +1,110 @@
+#!/bin/sh
+# SPDX-License-Identifier: BSD-2-Clause
+# Configure the current root filesystem, including when run inside a chroot.
+# No package installation hook invokes this command.
+set -eu
+PATH=/sbin:/bin:/usr/sbin:/usr/bin:/usr/local/sbin:/usr/local/bin
+export PATH
+umask 022
+fail() { printf 'c9-system-setup: %s\n' "$*" >&2; exit 1; }
+usage() { echo 'usage: c9-system-setup --profile virtualbox|intel [--user USER ...]'; }
+[ "$(id -u)" -eq 0 ] || fail 'run as root on the installation target'
+profile=
+users=
+while [ "$#" -gt 0 ]; do
+    case $1 in
+        --profile)
+            [ "$#" -ge 2 ] || fail '--profile needs a value'
+            [ -z "$profile" ] || fail '--profile was specified twice'
+            profile=$2; shift 2 ;;
+        --user)
+            [ "$#" -ge 2 ] || fail '--user needs a value'
+            case $2 in ''|-*|*[!a-zA-Z0-9_.-]*) fail 'invalid username' ;; esac
+            users="$users $2"; shift 2 ;;
+        -h|--help) usage; exit 0 ;;
+        *) usage >&2; fail "unknown argument: $1" ;;
+    esac
+done
+case $profile in virtualbox|intel) ;; *) usage >&2; fail 'select a hardware profile' ;; esac
+template=/usr/local/share/c9-system-config/profiles/$profile.conf
+target=/usr/local/etc/sddm.conf.d/91-c9-profile.conf
+[ -f "$template" ] || fail 'C9 profile template is not installed'
+[ -x /usr/local/bin/c9-user-init ] || fail 'c9-desktop-defaults is not installed'
+[ -x /usr/local/bin/sddm ] || fail 'SDDM is not installed'
+[ -x /usr/local/bin/X ] || fail 'Xorg is required for the SDDM greeter'
+[ -f /usr/local/etc/sddm.conf.d/90-c9.conf ] || fail 'C9 SDDM authentication policy is missing'
+
+# No existing account information is printed. Empty passwords are rejected;
+# the installer must create credentials, rather than baking them into an ISO.
+if [ -z "$users" ]; then
+    users=$(awk -F: '$3 >= 1000 && $3 <= 65000 && $10 !~ /(nologin|false)$/ && $2 !~ /^[!*]/ { print $1 }' /etc/master.passwd)
+fi
+[ -n "$users" ] || fail 'create a nonroot desktop account first, or pass --user'
+for user in $users; do
+    uid=$(awk -F: -v name="$user" '$1 == name { print $3 }' /etc/master.passwd)
+    [ -n "$uid" ] || fail "unknown local account: $user"
+    [ "$uid" -ge 1000 ] && [ "$uid" -le 65000 ] || fail "not a desktop account: $user"
+    awk -F: -v name="$user" '$1 == name { found=1; if ($2 == "" || $2 ~ /^[!*]/ || $10 ~ /(nologin|false)$/) exit 1 } END { if (!found) exit 1 }' /etc/master.passwd || fail "account needs an unlocked password and interactive shell: $user"
+    user_home=$(awk -F: -v name="$user" '$1 == name { print $9 }' /etc/master.passwd)
+    case $user_home in /*) ;; *) fail "home must be an absolute path: $user" ;; esac
+    [ -d "$user_home" ] || fail "home directory is missing: $user"
+    [ "$(stat -f %u "$user_home")" = "$uid" ] || fail "home is not owned by its account: $user"
+done
+
+# SDDM reads several configuration locations. Refuse conflicting automatic
+# login settings instead of silently rewriting an administrator's policy.
+for config in /usr/local/lib/sddm/sddm.conf.d/*.conf \
+    /usr/local/etc/sddm.conf.d/*.conf /usr/local/etc/sddm.conf /etc/sddm.conf; do
+    [ -f "$config" ] || continue
+    awk '
+        /^[ \t]*[;#]/ { next }
+        /^[ \t]*\[/ { section=$0; gsub(/[ \t\r]/,"",section); next }
+        section == "[Autologin]" && /^[ \t]*User[ \t]*=/ {
+            value=$0; sub(/^[^=]*=/,"",value); gsub(/^[ \t]+|[ \t\r]+$/,"",value)
+            if (value != "" && value != "\"\"") exit 1
+        }
+        section == "[Autologin]" && /^[ \t]*Relogin[ \t]*=/ {
+            value=$0; sub(/^[^=]*=/,"",value); gsub(/[ \t\r]/,"",value)
+            if (tolower(value) == "true" || tolower(value) == "yes" || value == "1") exit 1
+        }
+    ' "$config" || fail "automatic login is configured in $config; resolve it before C9 setup"
+done
+[ ! -L "$target" ] || fail "preserving symlink $target; resolve it before setup"
+if [ -e "$target" ] && ! cmp -s "$template" "$target"; then
+    fail "$target differs from the selected profile; preserved for administrator review"
+fi
+if [ -f /var/db/c9/profile ] && [ "$(cat /var/db/c9/profile)" != "$profile" ]; then
+    fail 'an existing C9 hardware profile is recorded; review its configuration before changing hardware'
+fi
+case $profile in
+    virtualbox)
+        [ -f /boot/modules/vboxguest.ko ] || fail 'install c9-hardware-virtualbox before setup'
+        ;;
+    intel)
+        [ -f /boot/modules/i915kms.ko ] || fail 'install c9-hardware-intel before setup'
+        # -k reads the installed kernel file, so this also works in a chroot.
+        [ "$(/bin/freebsd-version -k)" = 15.1-RELEASE-p6 ] || fail 'Intel modules require the installed 15.1-RELEASE-p6 kernel used for this package build'
+        ;;
+esac
+
+# Changes below are intentional target configuration, performed only after
+# all configuration/profile checks pass. Existing unrelated rc.conf values,
+# account groups, passwords, keys, and user configuration are retained.
+[ -e "$target" ] || install -m 0644 "$template" "$target"
+sysrc dbus_enable=YES
+sysrc sddm_enable=YES
+sysrc seatd_enable=YES
+case $profile in
+    virtualbox)
+        sysrc vboxguest_enable=YES
+        sysrc vboxservice_enable=YES
+        ;;
+    intel) sysrc kld_list+=i915kms ;;
+esac
+for user in $users; do
+    pw groupmod video -m "$user"
+    su -l "$user" -c /usr/local/bin/c9-user-init
+done
+install -d -m 0755 /var/db/c9
+printf '%s\n' "$profile" > /var/db/c9/profile
+printf 'C9 profile %s configured. Services start at the next boot; login requires authentication.\n' "$profile"

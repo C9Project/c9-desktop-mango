@@ -1,0 +1,8 @@
+Optional C9 development applications: the FreeBSD VS Code port, Git,
+Python 3.12 (python3.12), Node.js 24 with matching npm, and CMake command-line
+tools.
+
+Python 3.12 is selected explicitly; the pinned ports tree determines its
+patch version and all other application versions. This package does not
+install editor extensions, configure external accounts, or initialize project
+environments.

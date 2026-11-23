@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- SPDX-License-Identifier: BSD-2-Clause -->
+<!-- Copyright (c) 2026, C9 Project contributors. -->
+<svg xmlns="http://www.w3.org/2000/svg" width="256" height="256" viewBox="0 0 256 256">
+  <title>C9</title>
+  <rect x="8" y="8" width="240" height="240" rx="50" fill="#142a3b"/>
+  <g transform="translate(46 82)" fill="none" stroke="#dfede9" stroke-width="10" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M68 10 C49 -3 15 2 7 30 C-1 60 19 85 44 85 C55 85 64 81 70 75"/>
+    <path d="M130 85 C145 64 156 44 156 26 C156 10 144 1 130 1 C112 1 101 13 101 28 C101 46 114 55 129 55 C142 55 151 46 155 35"/>
+  </g>
+  <path d="M48 197 H204" stroke="#62b9ad" stroke-width="4" stroke-linecap="round"/>
+</svg>

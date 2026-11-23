@@ -1,0 +1,32 @@
+# Generated releases, caches, evidence and VM disks belong outside source Git.
+/artifacts/
+/backups/
+/releases/
+/runs/
+/packages/
+/distfiles/
+/work/
+*.iso
+*.img
+*.qcow2
+*.vdi
+*.vmdk
+*.pkg
+*.txz
+*.tar
+*.tar.gz
+*.tar.xz
+*.log
+
+# Local credentials and editor state.
+.env
+.env.*
+*.key
+*.p12
+*.pfx
+id_rsa
+id_ed25519
+.vscode/
+.idea/
+Thumbs.db
+.DS_Store

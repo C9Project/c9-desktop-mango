@@ -1,0 +1,4 @@
+C9 Mango session launchers and initial desktop preferences. The session refuses
+root, requires the runtime directory from authenticated PAM login, and runs its
+own D-Bus session. Templates initialize only missing files as the current user.
+The session requires a supported native DRM graphics device.

@@ -1,0 +1,7 @@
+Graphics package selection for the C9 Dell Latitude 5591 profile with Intel
+UHD 630, Coffee Lake-H PCI device 8086:3e9b. It supplies the FreeBSD DRM 6.12
+driver package and the explicitly selected Kaby Lake firmware family.
+
+The C9 setup utility's intel profile enables i915kms. This metaport does not
+configure services or load kernel modules when installed. Graphics acceptance
+testing is scoped to the selected Dell model, not every Intel device.

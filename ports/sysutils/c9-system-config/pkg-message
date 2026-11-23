@@ -1,0 +1,15 @@
+[
+{ type: install
+  message: <<EOM
+C9 services have not been enabled and no accounts have been changed.
+After installing the selected hardware package and creating a nonroot account:
+
+    c9-system-setup --profile intel --user USER
+
+The other profile is virtualbox. The command is chroot-safe and does
+not start services, load modules, create passwords, or generate machine keys.
+VirtualBox validates the installer and SDDM login only. Mango itself requires
+supported physical DRM graphics; no nested or alternate compositor is shipped.
+EOM
+}
+]

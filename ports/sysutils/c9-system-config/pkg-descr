@@ -1,0 +1,4 @@
+C9's explicit, chroot-safe system setup command and SDDM configuration template.
+The package itself does not enable services or change accounts. The installer
+or administrator selects a hardware profile, then invokes c9-system-setup.
+Passwords, machine keys, and existing desktop configuration are preserved.

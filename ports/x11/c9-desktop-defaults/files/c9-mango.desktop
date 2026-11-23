@@ -1,0 +1,8 @@
+[Desktop Entry]
+Name=C9 Mango
+Comment=C9 Mango desktop on native Wayland
+Exec=/usr/local/bin/c9-mango-session
+TryExec=/usr/local/bin/c9-mango-session
+Type=Application
+DesktopNames=mango;wlroots;
+Icon=c9-logo

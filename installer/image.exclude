@@ -1,0 +1,13 @@
+usr/src
+var/db/freebsd-update
+var/db/etcupdate
+boot/kernel.old
+etc/hostid
+boot/entropy
+var/db/entropy
+var/db/hostid
+etc/ssh/ssh_host_*
+root/.ssh
+etc/make.conf
+etc/src.conf
+etc/src-env.conf

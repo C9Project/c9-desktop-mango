@@ -1,0 +1,21 @@
+# SPDX-License-Identifier: BSD-2-Clause
+# C9 requires authentication at every boot and after logout.
+# Profile-specific session directories are selected by c9-system-setup.
+[General]
+DisplayServer=x11
+InputMethod=
+
+[Theme]
+Current=
+Font=DejaVu Sans,10
+
+[Users]
+MinimumUid=1000
+MaximumUid=65000
+HideUsers=root
+RememberLastSession=true
+
+[Autologin]
+User=
+Session=
+Relogin=false

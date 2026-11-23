@@ -1,0 +1,10 @@
+#!/bin/sh
+# Installer-only startup. This file is never copied to the installed target.
+mkdir -p /tmp/bsdinstall_etc
+export BSDINSTALL_DISTDIR=/usr/freebsd-dist
+export DISTRIBUTIONS='base.txz kernel.txz'
+# Firmware for the selected profile comes from the bundled C9 repository.
+export BSDINSTALL_SKIP_FIRMWARE=yes
+export BSDINSTALL_SKIP_MANUAL=yes
+export BSDINSTALL_LOG=/tmp/bsdinstall_log
+/usr/libexec/bsdinstall/runconsoles /usr/libexec/bsdinstall/startbsdinstall %

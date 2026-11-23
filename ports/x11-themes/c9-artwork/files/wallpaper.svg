@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- SPDX-License-Identifier: BSD-2-Clause -->
+<!-- Copyright (c) 2026, C9 Project contributors. -->
+<svg xmlns="http://www.w3.org/2000/svg" width="2560" height="1440" viewBox="0 0 2560 1440">
+  <title>C9 evening horizon</title>
+  <desc>Original dark blue and teal wallpaper with a small C9 monogram.</desc>
+  <defs>
+    <linearGradient id="sky" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#101a2c"/>
+      <stop offset="0.58" stop-color="#142a3b"/>
+      <stop offset="1" stop-color="#164d55"/>
+    </linearGradient>
+    <radialGradient id="glow">
+      <stop offset="0" stop-color="#58c6b7" stop-opacity=".23"/>
+      <stop offset="1" stop-color="#58c6b7" stop-opacity="0"/>
+    </radialGradient>
+    <linearGradient id="horizon" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0" stop-color="#1b354b"/>
+      <stop offset="1" stop-color="#287775"/>
+    </linearGradient>
+  </defs>
+  <rect width="2560" height="1440" fill="url(#sky)"/>
+  <circle cx="1920" cy="320" r="950" fill="url(#glow)"/>
+  <path d="M0 1030 C560 720 940 1230 1540 930 S2270 690 2560 825 V1440 H0Z" fill="url(#horizon)" opacity=".42"/>
+  <path d="M0 1190 C570 950 1120 1440 1810 1055 S2350 940 2560 995 V1440 H0Z" fill="#0e2334" opacity=".58"/>
+  <path d="M0 1350 C740 1120 1040 1510 1770 1300 S2300 1110 2560 1210 V1440 H0Z" fill="#0b1829" opacity=".72"/>
+  <g transform="translate(150 1190)" fill="none" stroke="#dfede9" stroke-width="10" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M68 10 C49 -3 15 2 7 30 C-1 60 19 85 44 85 C55 85 64 81 70 75"/>
+    <path d="M130 85 C145 64 156 44 156 26 C156 10 144 1 130 1 C112 1 101 13 101 28 C101 46 114 55 129 55 C142 55 151 46 155 35"/>
+  </g>
+  <path d="M150 1310 H306" stroke="#62b9ad" stroke-width="3" opacity=".8"/>
+</svg>

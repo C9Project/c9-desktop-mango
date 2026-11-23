@@ -1,0 +1,14 @@
+[
+{ type: install
+  message: <<EOM
+C9 graphics packages for Dell Latitude 5591 / Intel UHD 630 are installed.
+
+The C9 installer's intel profile enables i915kms. These kernel modules are
+built against the C9 FreeBSD 15.1-RELEASE-p6 jail sources; install the matching
+C9 base-system kernel and rebuild modules when its kernel interface changes.
+
+Successful package installation does not replace validation of display,
+authentication, logout, and power management on the target laptop.
+EOM
+}
+]

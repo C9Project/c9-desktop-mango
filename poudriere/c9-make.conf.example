@@ -1,0 +1,4 @@
+# C9 0.2 uses a fixed desktop selection containing Fuzzel, Mako, and Swaybg.
+# The old LAUNCHER/NOTIFICATIONS/WALLPAPER port options applied only to 0.1.
+# Use c9-release-make.conf.example and scripts/c9-build.sh configure for 0.2.
+# Do not edit the active build configuration while Poudriere is running.

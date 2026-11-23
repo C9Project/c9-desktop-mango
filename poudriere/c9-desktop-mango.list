@@ -1,0 +1,3 @@
+# Poudriere expects origins, not package filenames. Dependencies are recursive.
+# Use this with the full c9ports tree and the registered c9overlay overlay.
+x11/c9-desktop-mango

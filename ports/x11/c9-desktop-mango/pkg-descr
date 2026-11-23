@@ -1,0 +1,8 @@
+C9's Mango desktop combines the compositor, Foot, Waybar, Fuzzel, Mako,
+Swaybg, fonts, clipboard and XDG tools, desktop portals, seat management,
+and an SDDM login screen. Regular C9 packages own the session defaults,
+artwork, and explicit system setup utility.
+
+This dependency-only port does not enable services or modify user files.
+The installer applies the selected hardware profile and initializes users.
+Desktop access requires authentication; automatic login is not configured.

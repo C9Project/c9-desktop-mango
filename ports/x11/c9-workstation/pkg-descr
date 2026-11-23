@@ -1,0 +1,6 @@
+The default C9 workstation installs the Mango desktop and essential
+applications. Development tools and LibreOffice are available separately
+through c9-apps-development and c9-apps-office.
+
+Hardware profiles and authenticated-session setup are applied by the C9
+installer. This metaport has no application or configuration-file payload.

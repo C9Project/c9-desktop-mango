@@ -1,0 +1,17 @@
+{
+  "layer": "top",
+  "position": "top",
+  "height": 34,
+  "spacing": 8,
+  "modules-left": ["custom/launcher", "mango/workspaces", "mango/layout"],
+  "modules-center": ["mango/window"],
+  "modules-right": ["cpu", "memory", "clock", "tray", "custom/logout"],
+  "custom/launcher": {"format": "C9", "tooltip": false, "on-click": "fuzzel"},
+  "mango/workspaces": {"format": "{index}", "on-click": "activate"},
+  "mango/window": {"max-length": 60},
+  "cpu": {"format": "CPU {usage}%", "interval": 5},
+  "memory": {"format": "RAM {percentage}%", "interval": 5},
+  "clock": {"format": "{:%a %d %b  %H:%M}", "tooltip-format": "{:%Y-%m-%d}"},
+  "tray": {"spacing": 8},
+  "custom/logout": {"format": "Logout", "tooltip": false, "on-click": "mmsg dispatch quit"}
+}

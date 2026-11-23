@@ -1,0 +1,120 @@
+#!/bin/sh
+set -eu
+
+fail() { echo "C9: $*" >&2; exit 1; }
+# bsdinstall redirects stderr into its log. Keep curses on the original
+# terminal stdout (FD 5), and capture only bsddialog's stderr selection.
+choose_dialog() {
+    bsddialog "$@" 2>&1 1>&5
+}
+[ "$(id -u)" -eq 0 ] || fail 'The installer requires root.'
+[ "$#" -eq 1 ] || fail 'Expected the bsdinstall target root.'
+target=$(realpath "$1")
+[ "$target" = /mnt ] || fail 'Refusing to configure a target other than /mnt.'
+[ -x "$target/bin/sh" ] && [ -f "$target/etc/master.passwd" ] || fail 'Base system is missing.'
+mount -p | awk -v t="$target" '$2 == t {found=1} END {exit !found}' || fail 'Target root is not mounted.'
+[ "$(chroot "$target" /bin/freebsd-version -u)" = 15.1-RELEASE-p6 ] || fail 'Target userland is not 15.1-RELEASE-p6.'
+[ "$(env ROOT="$target" /bin/freebsd-version -k)" = 15.1-RELEASE-p6 ] || fail 'Target kernel is not 15.1-RELEASE-p6.'
+. /usr/local/share/c9/install.conf
+
+log=/tmp/c9-install.log
+touch "$log"
+chmod 600 "$log"
+# Avoid logging passwords: adduser/passwd remain attached to the terminal.
+echo "C9 target configuration started $(date -u '+%Y-%m-%dT%H:%M:%SZ')" >> "$log"
+repo_mount="$target/mnt/c9-packages"
+mounted=no
+cleanup() {
+    if [ "$mounted" = yes ]; then
+        umount "$repo_mount" || return 1
+        mounted=no
+    fi
+}
+trap 'cleanup' EXIT
+trap 'exit 1' HUP INT TERM
+
+# bsdinstall normally permits skipping adduser. C9 needs a real desktop user.
+# Print only names, never password hashes, into the installer state file.
+list_users() {
+    awk -f /usr/local/libexec/c9/eligible-users.awk "$target/etc/master.passwd"
+}
+while :; do
+    users=$(list_users)
+    [ -n "$users" ] && break
+    bsddialog --backtitle 'C9 Installer' --title 'Desktop user required' \
+        --msgbox 'Create a regular user with a password. C9 requires authentication and does not provide automatic login. Choose a normal login shell and a home directory.' 0 0 || exit 1
+    bsdinstall adduser || fail 'User creation was cancelled or failed.'
+done
+
+# Only profiles whose complete packages were verified and bundled are offered.
+exec 5>&1
+set --
+for offered_profile in $C9_HARDWARE_PROFILES; do
+    case "$offered_profile" in
+        virtualbox) set -- "$@" virtualbox 'VirtualBox: installer and SDDM login testing only' ;;
+        intel) set -- "$@" intel 'Dell Latitude 5591 / Intel UHD 630: native Mango' ;;
+        *) fail 'Image contains an unknown hardware profile.' ;;
+    esac
+done
+profile=$(choose_dialog --backtitle 'C9 Installer' --title 'Hardware profile' \
+    --menu 'Choose your graphics profile. VirtualBox validates installation and the login screen; its FreeBSD driver cannot run native Mango. Desktop validation targets the Dell Latitude 5591 with Intel UHD 630.' \
+    0 0 0 "$@") || exit 1
+case " $C9_HARDWARE_PROFILES " in *" $profile "*) ;; *) fail 'Unbundled hardware profile selected.' ;; esac
+choices=$(choose_dialog --backtitle 'C9 Installer' --title 'Optional applications' \
+    --separate-output --checklist 'Desktop and Essential applications are always installed. Select additional groups; all packages are on this image.' 0 0 0 \
+    Development 'VS Code, Git, Python, Node.js and npm' off \
+    Office 'LibreOffice' off) || exit 1
+exec 5>&-
+set -- c9-workstation "c9-hardware-$profile"
+for choice in $choices; do
+    case "$choice" in
+        Development) set -- "$@" c9-apps-development ;;
+        Office) set -- "$@" c9-apps-office ;;
+        *) fail 'Unexpected application selection.' ;;
+    esac
+done
+
+mkdir -p "$repo_mount" "$target/tmp/c9-repos" "$target/usr/local/etc/ssl/certs" "$target/var/log"
+install -m 644 /usr/local/share/c9/poudriere.cert "$target/usr/local/etc/ssl/certs/c9-repository.pub"
+mount -t nullfs -o ro /usr/local/share/c9/packages "$repo_mount"
+mounted=yes
+cat > "$target/tmp/c9-repos/C9Offline.conf" <<'EOF'
+C9Offline: {
+  url: "file:///mnt/c9-packages",
+  enabled: yes,
+  signature_type: "pubkey",
+  pubkey: "/usr/local/etc/ssl/certs/c9-repository.pub"
+}
+EOF
+install -m 755 /usr/local/libexec/c9/pkg-static "$target/tmp/c9-pkg-static"
+echo 'Installing C9 packages from the bundled, signed repository. This can take several minutes.'
+chroot "$target" /tmp/c9-pkg-static -o REPOS_DIR=/tmp/c9-repos update -f >> "$log" 2>&1 || fail "Repository verification failed; see $log."
+chroot "$target" /tmp/c9-pkg-static -o REPOS_DIR=/tmp/c9-repos install -y -r C9Offline pkg "$@" >> "$log" 2>&1 || fail "Package installation failed; see $log."
+
+
+# FreeBSD adduser can remount a ZFS home with the installer altroot twice.
+# Correct only selected home datasets from the live root, before ownership checks.
+set --
+for account in $users; do
+    set -- "$@" "$account"
+done
+/usr/local/libexec/c9/prepare-user-homes "$target" "$@" >> "$log" 2>&1 || fail "User home mount preparation failed; see $log."
+
+set -- --profile "$profile"
+for account in $users; do
+    set -- "$@" --user "$account"
+done
+chroot "$target" /usr/local/sbin/c9-system-setup "$@" >> "$log" 2>&1 || fail "Desktop setup failed; see $log."
+
+mkdir -p "$target/usr/local/etc/pkg/repos" "$target/usr/local/share/c9/build"
+install -m 644 /usr/local/share/c9/C9.conf "$target/usr/local/etc/pkg/repos/C9.conf"
+# Packages for this release are supplied and updated as one consistent repo.
+printf 'FreeBSD: { enabled: no }\n' > "$target/usr/local/etc/pkg/repos/FreeBSD.conf"
+cp /usr/local/share/c9/build/* "$target/usr/local/share/c9/build/"
+echo 'C9 package installation and desktop configuration completed.' >> "$log"
+install -m 600 "$log" "$target/var/log/c9-install.log"
+cleanup || fail 'Could not unmount installation repository.'
+rm -f "$target/tmp/c9-pkg-static" "$target/tmp/c9-repos/C9Offline.conf"
+rmdir "$target/tmp/c9-repos" "$repo_mount"
+bsddialog --backtitle 'C9 Installer' --title 'C9 configured' --msgbox \
+    'C9 is installed. Remove the ISO after shutdown or reboot. Sign in at SDDM using the regular account you created. Automatic login is disabled.' 0 0

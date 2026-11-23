@@ -1,0 +1,165 @@
+#!/bin/sh
+# SPDX-License-Identifier: BSD-2-Clause
+# Reconcile selected p6 adduser ZFS homes from OUTSIDE the installation chroot.
+# No ownership/property changes, recursive mounts, key loading or dataset creation.
+set -eu
+set -o pipefail
+PATH=/sbin:/bin:/usr/sbin:/usr/bin
+LC_ALL=C
+export PATH LC_ALL
+
+fail() { printf 'C9 home mounts: %s\n' "$*" >&2; exit 1; }
+[ "$(uname -s)" = FreeBSD ] && [ "$(id -u)" = 0 ] || fail 'run as root on FreeBSD'
+[ "$#" -ge 2 ] || fail 'usage: prepare-user-homes TARGET USER [USER ...]'
+target=$1
+shift
+case "$target" in /*) ;; *) fail 'target must be absolute' ;; esac
+case "$target" in /|*[!a-zA-Z0-9_./-]*) fail 'use a separate target with a simple absolute path' ;; esac
+[ -d "$target" ] && [ "$(realpath -q "$target")" = "$target" ] || fail 'target must be a resolved directory'
+[ "$(stat -f %u "$target")" = 0 ] || fail 'target root is not owned by root'
+[ -f "$target/etc/master.passwd" ] || fail 'target account database is missing'
+for account do
+    case "$account" in ''|-*|*[!a-zA-Z0-9_.-]*) fail 'invalid selected account name' ;; esac
+done
+
+root_mount=$(mount -p | awk -v p="$target" '$2 == p {n++; print $1 "|" $3} END {if (n != 1) exit 1}') ||
+    fail 'target root must be mounted exactly once'
+root_source=${root_mount%|*}
+root_type=${root_mount##*|}
+pool=
+pool_guid=
+if [ "$root_type" = zfs ]; then
+    pool=${root_source%%/*}
+    [ "$(zfs list -H -o name "$root_source")" = "$root_source" ] || fail 'target root dataset is missing'
+    [ "$(zpool get -H -o value altroot "$pool")" = "$target" ] ||
+        fail 'target pool altroot differs; preserving all mounts'
+    pool_guid=$(zpool get -H -o value guid "$pool")
+fi
+
+check_owner() {
+    [ "$(chroot "$target" /usr/bin/stat -f %u "$2")" = "$3" ] ||
+        fail "home is not owned by its account: $1 (home $2); no ownership was changed"
+}
+
+check_target() {
+    local current
+    current=$(mount -p | awk -v p="$target" '$2 == p {n++; print $1 "|" $3} END {if (n != 1) exit 1}') ||
+        fail 'target root mount changed'
+    [ "$current" = "$root_mount" ] || fail 'target root source changed'
+    [ "$(zpool get -H -o value guid "$pool")" = "$pool_guid" ] &&
+        [ "$(zpool get -H -o value altroot "$pool")" = "$target" ] ||
+        fail 'target pool identity or altroot changed'
+}
+
+actual_mount() {
+    mount -p | awk -v d="$1" '$1 == d {n++; if ($3 != "zfs") bad=1; print $2}
+        END {if (n > 1 || bad) exit 1}'
+}
+
+reconcile() {
+    local account identity uid rest home shell resolved intended matches dataset actual mounted entries
+    account=$1
+    identity=$(awk -F: -v name="$account" '
+        $1 == name {
+            n++
+            if ($3 !~ /^[0-9]+$/ || $3 < 1000 || $3 > 65000 ||
+                $2 == "" || $2 ~ /^[!*]/ || $10 ~ /(nologin|false)$/) bad=1
+            print $3 ":" $9 ":" $10
+        }
+        END {if (n != 1 || bad) exit 1}
+    ' "$target/etc/master.passwd") || fail "selected account is not an unlocked desktop account: $account"
+    uid=${identity%%:*}
+    rest=${identity#*:}
+    home=${rest%:*}
+    shell=${rest##*:}
+    case "$home" in /*) ;; *) fail "home is not absolute: $account" ;; esac
+    chroot "$target" /bin/test -x "$shell" || fail "login shell is unavailable: $account"
+    chroot "$target" /bin/test -d "$home" || fail "home directory is missing: $account"
+    # Preserve explicitly symlinked homes. The existing setup guard checks the
+    # link's owner, and c9-user-init deliberately does not populate such a home.
+    if chroot "$target" /bin/test -L "$home"; then
+        check_owner "$account" "$home" "$uid"
+        printf 'C9 home mounts: preserving symlinked home for %s\n' "$account"
+        return
+    fi
+    resolved=$(chroot "$target" /bin/realpath -q "$home") ||
+        fail "cannot resolve home inside target: $account"
+    [ "$resolved" != / ] || fail "home resolves to the target root: $account"
+    # UFS and normal directories within a parent dataset need no mount change.
+    if [ "$root_type" != zfs ]; then
+        check_owner "$account" "$home" "$uid"
+        return
+    fi
+    case "$resolved" in /*) ;; *) fail "resolved home is not absolute: $account" ;; esac
+    case "$resolved" in
+        *[!a-zA-Z0-9_./-]*)
+            check_owner "$account" "$home" "$uid"
+            printf 'C9 home mounts: preserving custom home path for %s\n' "$account"
+            return ;;
+    esac
+    intended=$target$resolved
+    # ZFS reports effective mountpoints with pool altroot already included.
+    matches=$(zfs list -H -r -t filesystem -o name,mountpoint "$pool" |
+        awk -F '\t' -v p="$intended" '$2 == p {n++; print $1} END {if (n > 1) exit 1}') ||
+        fail "home dataset is ambiguous: $account"
+    if [ -z "$matches" ]; then
+        check_owner "$account" "$home" "$uid"
+        return
+    fi
+    dataset=$matches
+    [ "$dataset" != "$root_source" ] || fail "refusing to move the target root dataset: $account"
+    case "$dataset" in "$pool"/*) ;; *) fail 'home dataset is outside the target pool' ;; esac
+    actual=$(actual_mount "$dataset") || fail "dataset has ambiguous actual mounts: $dataset"
+    mounted=$(zfs get -H -o value mounted "$dataset")
+    if [ "$actual" = "$intended" ]; then
+        [ "$mounted" = yes ] || fail "dataset mount state is inconsistent: $dataset"
+        check_owner "$account" "$home" "$uid"
+        return
+    fi
+    case "$actual" in
+        '') [ "$mounted" = no ] || fail "dataset mount state is inconsistent: $dataset" ;;
+        "$target$intended") [ "$mounted" = yes ] || fail "dataset mount state is inconsistent: $dataset" ;;
+        *) fail "preserving unexpected mount for $dataset at $actual; expected $intended" ;;
+    esac
+    [ "$(zfs get -H -o value canmount "$dataset")" = on ] ||
+        fail "preserving nonstandard canmount policy: $dataset"
+    [ "$(zfs get -H -o value readonly "$dataset")" = off ] ||
+        fail "home dataset is read-only: $dataset"
+    case "$(zfs get -H -o value keystatus "$dataset")" in
+        available|-) ;;
+        *) fail "home dataset is locked; unlock it deliberately before retrying: $dataset" ;;
+    esac
+    [ "$(realpath -q "$intended")" = "$intended" ] ||
+        fail "intended mount directory has unexpected host path resolution: $intended"
+    [ -d "$intended" ] && [ ! -L "$intended" ] ||
+        fail "intended mount directory is not a real directory: $intended"
+    entries=$(find "$intended" -mindepth 1 -maxdepth 1 -print -quit) ||
+        fail "could not inspect intended mount directory: $intended"
+    [ -z "$entries" ] ||
+        fail "preserving files in the intended mount directory: $intended"
+    mount -p | awk -v p="$intended" -v old="$actual" '
+        $2 == p || index($2, p "/") == 1 ||
+        (old != "" && index($2, old "/") == 1) {bad=1}
+        END {exit bad}' || fail "an unrelated or child mount occupies the home paths: $account"
+
+    # Recheck the exact target and dataset immediately before scoped changes.
+    check_target
+    [ "$(zfs get -H -o value mountpoint "$dataset")" = "$intended" ] ||
+        fail "dataset mountpoint changed: $dataset"
+    [ "$(actual_mount "$dataset")" = "$actual" ] || fail "dataset moved during inspection: $dataset"
+    printf 'C9 home mounts: mounting %s for %s at %s (previous %s)\n' \
+        "$dataset" "$account" "$intended" "${actual:-unmounted}"
+    if [ -n "$actual" ]; then
+        zfs unmount "$dataset" || fail "could not unmount the misplaced home: $dataset"
+    fi
+    zfs mount "$dataset" ||
+        fail "could not mount home at $intended; dataset left for inspection: $dataset"
+    [ "$(actual_mount "$dataset")" = "$intended" ] ||
+        fail "home mounted at an unexpected location: $dataset"
+    check_owner "$account" "$home" "$uid"
+    printf 'C9 home mounts: verified %s at %s, uid %s\n' "$dataset" "$intended" "$uid"
+}
+
+for account do
+    reconcile "$account"
+done

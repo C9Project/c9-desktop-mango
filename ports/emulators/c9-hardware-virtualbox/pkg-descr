@@ -1,0 +1,8 @@
+VirtualBox 7.2 guest integration and Xorg for validating the C9 installer
+and SDDM login screen. This hardware profile is separate from the common
+desktop and does not provide an alternate Mango compositor.
+
+Mango graphical operation is not established for this VirtualBox profile:
+the upstream SceneFX renderer requires DRM capabilities that the virtual
+GPU may not provide. Desktop acceptance testing uses supported physical
+Intel or AMD hardware.

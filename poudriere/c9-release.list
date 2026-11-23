@@ -1,0 +1,13 @@
+# C9 0.2 offline installer payload: default workstation, optional groups,
+# VirtualBox installer validation, and Dell Latitude 5591 graphics.
+# Every payload-bearing C9 port is also listed explicitly for release checks.
+x11/c9-workstation
+x11/c9-desktop-mango
+misc/c9-apps-essential
+devel/c9-apps-development
+editors/c9-apps-office
+x11/c9-desktop-defaults
+sysutils/c9-system-config
+x11-themes/c9-artwork
+emulators/c9-hardware-virtualbox
+sysutils/c9-hardware-intel

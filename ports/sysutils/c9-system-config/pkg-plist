@@ -1,0 +1,4 @@
+sbin/c9-system-setup
+@sample etc/sddm.conf.d/90-c9.conf.sample
+%%DATADIR%%/profiles/virtualbox.conf
+%%DATADIR%%/profiles/intel.conf

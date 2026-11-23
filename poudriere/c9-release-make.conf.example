@@ -1,0 +1,27 @@
+# Approved C9 0.2 package policy. Merge into the make.conf for the release
+# build set; do not overwrite other settings. Poudriere must also have
+# ALLOW_MAKE_JOBS=yes in the matching <set>-poudriere.conf.
+MAKE_JOBS_NUMBER=2
+
+# Disable Thunar's unused trash-panel applet. Its pinned upstream port
+# still requires xfce4-panel unconditionally; C9 does not start that panel.
+x11-fm_thunar_UNSET_FORCE= PLUG_TPA
+
+# Yarn defaults to one archive worker per visible CPU, independently of make
+# jobs. Its Node isolates exceed this server's 8 GiB process-address limit.
+# The exact Electron dependency fetch passed with these settings under the
+# unchanged limit. Keep the override scoped to this Yarn-using build.
+.if !empty(.CURDIR:M*/devel/electron43)
+MAKE_ENV+= YARN_TASK_POOL_MODE=async YARN_TASK_POOL_CONCURRENCY=2
+.endif
+
+# VS Code's native TypeScript compiler uses Go. Keep scheduler concurrency at
+# two and collect earlier; the soft target cannot reclaim live compiler data.
+# A cold full typecheck passed with the separately approved 16 GiB address cap.
+.if !empty(.CURDIR:M*/editors/vscode)
+MAKE_ENV+= GOMAXPROCS=2 GOMEMLIMIT=6GiB
+.endif
+
+# C9 0.2 desktop dependencies are fixed: Fuzzel, Mako, and Swaybg remain
+# installed. The 0.1 LAUNCHER/NOTIFICATIONS/WALLPAPER options no longer apply.
+# Development and office are optional installer-installed package groups.

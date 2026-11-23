@@ -1,0 +1,5 @@
+Essential C9 applications: Firefox for browsing, Foot as the terminal,
+Thunar for file management, and Zathura with the MuPDF backend for PDFs.
+
+Thunar's upstream port requires Xfce libraries and the Xfce panel package.
+C9's desktop session uses Waybar; it does not start that extra panel.

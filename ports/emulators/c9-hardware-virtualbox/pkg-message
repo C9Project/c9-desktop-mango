@@ -1,0 +1,14 @@
+[
+{ type: install
+  message: <<EOM
+C9 VirtualBox installer and login-screen validation packages are installed.
+
+Use VBoxSVGA and disable VirtualBox 3D acceleration. Guest integration
+requires vboxguest and vboxservice; the C9 setup utility manages these.
+
+The current ports tree supplies VirtualBox 7.2 Guest Additions. Compatibility
+with the host's VirtualBox version requires testing. This profile validates
+the installer and login screen; it does not establish Mango desktop support.
+EOM
+}
+]

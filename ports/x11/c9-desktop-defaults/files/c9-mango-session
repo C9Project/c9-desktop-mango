@@ -1,0 +1,42 @@
+#!/bin/sh
+# SPDX-License-Identifier: BSD-2-Clause
+set -eu
+PATH=/usr/local/bin:/usr/bin:/bin
+export PATH
+umask 077
+fail() { printf 'c9-mango-session: %s\n' "$*" >&2; exit 1; }
+[ "$(id -u)" -ne 0 ] || fail 'a desktop session must not run as root'
+[ "$#" -eq 0 ] || fail 'usage: c9-mango-session'
+case ${XDG_RUNTIME_DIR:-} in /*) ;; *) fail 'log in through SDDM or a PAM login first; XDG_RUNTIME_DIR is missing' ;; esac
+[ -d "$XDG_RUNTIME_DIR" ] && [ ! -L "$XDG_RUNTIME_DIR" ] || fail 'invalid runtime directory'
+[ "$(stat -f %u "$XDG_RUNTIME_DIR")" = "$(id -u)" ] || fail 'runtime directory has the wrong owner'
+[ "$(stat -f %Lp "$XDG_RUNTIME_DIR")" = 700 ] || fail 'runtime directory must have mode 0700'
+
+/usr/local/bin/c9-user-init
+# Respect XDG_CONFIG_HOME if the user explicitly selected a configuration root.
+config_root=${XDG_CONFIG_HOME:-$HOME/.config}
+if [ -f "$config_root/mango/config.conf" ]; then
+    mango_config=$config_root/mango/config.conf
+elif [ -f "$config_root/mango/config.toml" ]; then
+    mango_config=$config_root/mango/config.toml
+else
+    mango_config=/usr/local/share/c9/skel/.config/mango/config.conf
+fi
+/usr/local/bin/mango -c "$mango_config" -p || fail 'Mango configuration validation failed; user files were preserved'
+
+XDG_CURRENT_DESKTOP=mango
+XDG_SESSION_DESKTOP=c9-mango
+XDG_SESSION_TYPE=wayland
+export XDG_CURRENT_DESKTOP XDG_SESSION_DESKTOP XDG_SESSION_TYPE
+LIBSEAT_BACKEND=seatd
+export LIBSEAT_BACKEND
+# SDDM may carry the greeter's DISPLAY into the user environment. Select native
+# hardware explicitly so it cannot accidentally produce a nested desktop.
+WLR_BACKENDS=drm,libinput
+export WLR_BACKENDS
+unset DISPLAY WAYLAND_DISPLAY
+
+# Mango -s starts this helper only after the backend is ready, in a separate
+# process group which Mango terminates on logout. The helper drains its stdin.
+exec /usr/local/bin/dbus-run-session -- /usr/local/bin/mango \
+    -c "$mango_config" -s 'exec /usr/local/libexec/c9/session-apps'

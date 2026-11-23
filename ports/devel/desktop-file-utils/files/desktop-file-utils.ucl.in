@@ -1,0 +1,26 @@
+path: "%%PREFIX%%/%%MIMEDIRS%%"
+cleanup: {
+	type: lua
+	script: <<EOS
+local mimedir = "%%PREFIX%%/%%MIMEDIRS%%/"
+for _, name in ipairs({"mimeinfo.cache", "intent.cache"}) do
+	local cache = mimedir .. name
+	local st = pkg.stat(cache)
+	if st then
+		os.remove(cache)
+	end
+end
+local res = pkg.readdir(mimedir)
+if #res == 0 then
+	os.remove(mimedir)
+end
+EOS
+}
+trigger: {
+	type: lua
+	sandbox: false
+	script: <<EOS
+print("Building cache database of MIME types")
+pkg.exec({"%%PREFIX%%/bin/update-desktop-database","-q"})
+EOS
+}

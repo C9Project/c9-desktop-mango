@@ -1,0 +1,10 @@
+/* SPDX-License-Identifier: BSD-2-Clause */
+* { font-family: "DejaVu Sans", sans-serif; font-size: 13px; border: none; border-radius: 0; min-height: 0; }
+window#waybar { background: #17212b; color: #e6edf3; }
+#custom-launcher { color: #ffbd69; font-weight: bold; padding: 0 16px; }
+#workspaces button { color: #a9b9c6; padding: 0 10px; }
+#workspaces button.active { color: #17212b; background: #ffbd69; }
+#workspaces button.urgent { background: #f26b6b; }
+#window { color: #cad6df; }
+#cpu, #memory, #clock, #tray, #custom-logout { padding: 0 8px; }
+#custom-logout { color: #ffbd69; }

@@ -1,0 +1,132 @@
+{
+  "checked_on": "2026-11-10",
+  "purpose": "Source provenance; not a dependency lockfile or build result",
+  "sources": [
+    {
+      "path": "x11-wm/mango/Makefile",
+      "url": "https://raw.githubusercontent.com/freebsd/freebsd-ports/6e4a386577aaa191a68b11865fcb18e02f98e525/x11-wm/mango/Makefile",
+      "sha256": "35ce7cfff5f503c4a081a4d0412f2f5d7e5eb7c59b1314efe3e32feabfeb6cf2",
+      "status": "ok",
+      "bytes": 1565,
+      "ports_commit": "6e4a386577aaa191a68b11865fcb18e02f98e525"
+    },
+    {
+      "path": "x11/foot/Makefile",
+      "url": "https://raw.githubusercontent.com/freebsd/freebsd-ports/6e4a386577aaa191a68b11865fcb18e02f98e525/x11/foot/Makefile",
+      "sha256": "0a32ee605d57788a54390ca122fb0131140ae81a635518944c55d4e3c0768bd8",
+      "status": "ok",
+      "bytes": 3666,
+      "ports_commit": "6e4a386577aaa191a68b11865fcb18e02f98e525"
+    },
+    {
+      "path": "sysutils/seatd/Makefile",
+      "url": "https://raw.githubusercontent.com/freebsd/freebsd-ports/6e4a386577aaa191a68b11865fcb18e02f98e525/sysutils/seatd/Makefile",
+      "sha256": "e23b7547921c275a26373c5e74f53fdfc1109966cfd946aa4cb165ffc1cc1e50",
+      "status": "ok",
+      "bytes": 1557,
+      "ports_commit": "6e4a386577aaa191a68b11865fcb18e02f98e525"
+    },
+    {
+      "path": "devel/dbus/Makefile",
+      "url": "https://raw.githubusercontent.com/freebsd/freebsd-ports/6e4a386577aaa191a68b11865fcb18e02f98e525/devel/dbus/Makefile",
+      "sha256": "4a9f90020bb00e43c8cdaef556c48bf82395287d138ba1bf0fa2eb43d23d42b9",
+      "status": "ok",
+      "bytes": 1912,
+      "ports_commit": "6e4a386577aaa191a68b11865fcb18e02f98e525"
+    },
+    {
+      "path": "devel/xdg-user-dirs/Makefile",
+      "url": "https://raw.githubusercontent.com/freebsd/freebsd-ports/6e4a386577aaa191a68b11865fcb18e02f98e525/devel/xdg-user-dirs/Makefile",
+      "sha256": "81ded118b3927a6f98ff8f34fca8cd526636eddc27fcd0970d9d4223eade587f",
+      "status": "ok",
+      "bytes": 730,
+      "ports_commit": "6e4a386577aaa191a68b11865fcb18e02f98e525"
+    },
+    {
+      "path": "devel/xdg-utils/Makefile",
+      "url": "https://raw.githubusercontent.com/freebsd/freebsd-ports/6e4a386577aaa191a68b11865fcb18e02f98e525/devel/xdg-utils/Makefile",
+      "sha256": "5b686cc5aeb641041c913e5dd4144002d381b69fe9dc9f9537f5fef63f5e91b6",
+      "status": "ok",
+      "bytes": 773,
+      "ports_commit": "6e4a386577aaa191a68b11865fcb18e02f98e525"
+    },
+    {
+      "path": "x11/wl-clipboard/Makefile",
+      "url": "https://raw.githubusercontent.com/freebsd/freebsd-ports/6e4a386577aaa191a68b11865fcb18e02f98e525/x11/wl-clipboard/Makefile",
+      "sha256": "f3820b45eac96aee5d172cfb9b6ddb7d081b296613b428ab9e69321422049a25",
+      "status": "ok",
+      "bytes": 1305,
+      "ports_commit": "6e4a386577aaa191a68b11865fcb18e02f98e525"
+    },
+    {
+      "path": "x11-fonts/dejavu/Makefile",
+      "url": "https://raw.githubusercontent.com/freebsd/freebsd-ports/6e4a386577aaa191a68b11865fcb18e02f98e525/x11-fonts/dejavu/Makefile",
+      "sha256": "b141c91e5a9dc4807b5f7e1e8215f1883a25d5d52d9660fd19d1709641c09605",
+      "status": "ok",
+      "bytes": 1821,
+      "ports_commit": "6e4a386577aaa191a68b11865fcb18e02f98e525"
+    },
+    {
+      "path": "x11/fuzzel/Makefile",
+      "url": "https://raw.githubusercontent.com/freebsd/freebsd-ports/6e4a386577aaa191a68b11865fcb18e02f98e525/x11/fuzzel/Makefile",
+      "sha256": "31c4a12c63610d388abb94e35f9204ced921a42914dc3eab75f1e90f6a763fd8",
+      "status": "ok",
+      "bytes": 2141,
+      "ports_commit": "6e4a386577aaa191a68b11865fcb18e02f98e525"
+    },
+    {
+      "path": "x11/mako/Makefile",
+      "url": "https://raw.githubusercontent.com/freebsd/freebsd-ports/6e4a386577aaa191a68b11865fcb18e02f98e525/x11/mako/Makefile",
+      "sha256": "0639e3f746e50a5c53eb145da727ab1bfe8ff9544b2dc94033ed72ee80778257",
+      "status": "ok",
+      "bytes": 1212,
+      "ports_commit": "6e4a386577aaa191a68b11865fcb18e02f98e525"
+    },
+    {
+      "path": "x11/swaybg/Makefile",
+      "url": "https://raw.githubusercontent.com/freebsd/freebsd-ports/6e4a386577aaa191a68b11865fcb18e02f98e525/x11/swaybg/Makefile",
+      "sha256": "8c318c0a6b4141e9f6e9870cd92d7da509e6d15c1298f4f9f956aae130026d22",
+      "status": "ok",
+      "bytes": 986,
+      "ports_commit": "6e4a386577aaa191a68b11865fcb18e02f98e525"
+    },
+    {
+      "path": "Mk/Uses/metaport.mk",
+      "url": "https://raw.githubusercontent.com/freebsd/freebsd-ports/6e4a386577aaa191a68b11865fcb18e02f98e525/Mk/Uses/metaport.mk",
+      "sha256": "b924006165bbd724f6b582379873e183b02d61012713b4855cabc9526d87386e",
+      "status": "ok",
+      "bytes": 484,
+      "ports_commit": "6e4a386577aaa191a68b11865fcb18e02f98e525"
+    },
+    {
+      "path": "Mk/bsd.options.mk",
+      "url": "https://raw.githubusercontent.com/freebsd/freebsd-ports/6e4a386577aaa191a68b11865fcb18e02f98e525/Mk/bsd.options.mk",
+      "sha256": "18469107813ff043ccdf464cea347a997e85ddca2a92a4acb8fbc5aafa2b56db",
+      "status": "ok",
+      "bytes": 23984,
+      "ports_commit": "6e4a386577aaa191a68b11865fcb18e02f98e525"
+    },
+    {
+      "path": "poudriere/ports.sh",
+      "url": "https://raw.githubusercontent.com/freebsd/poudriere/master/src/share/poudriere/ports.sh",
+      "sha256": "9055a6e5cc2795849c6ca5432e315eac568e2c772adbe135dce8c36677cf751f",
+      "status": "ok",
+      "bytes": 12115
+    },
+    {
+      "path": "poudriere/options.sh",
+      "url": "https://raw.githubusercontent.com/freebsd/poudriere/master/src/share/poudriere/options.sh",
+      "sha256": "2f5a90d77e2777d78b676555eba3170c4620859f09221d5bbc57c4c07eefa688",
+      "status": "ok",
+      "bytes": 7180
+    },
+    {
+      "path": "Mk/bsd.port.mk",
+      "url": "https://raw.githubusercontent.com/freebsd/freebsd-ports/6e4a386577aaa191a68b11865fcb18e02f98e525/Mk/bsd.port.mk",
+      "sha256": "4f26d781a4515eb71db0de934999bf7e5d05b8ebdee9003a4f510b1ba2599c9c",
+      "status": "ok",
+      "bytes": 202033,
+      "ports_commit": "6e4a386577aaa191a68b11865fcb18e02f98e525"
+    }
+  ]
+}
