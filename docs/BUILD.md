@@ -121,5 +121,6 @@ offline installation or graphics.
 | Repository belongs to another build | Use the actual completed published generation |
 | Intel setup rejects kernel | Use matched 15.1-RELEASE-p6 kernel/module packages |
 
-A real maintainer contact remains necessary before publication or submission
-to the FreeBSD ports tree.
+The C9 source maintainer contact is `c9_project@proton.me`; the project account
+is [C9Project](https://github.com/C9Project). Previously built packages retain
+their original contact metadata until rebuilt with a suitable release identity.

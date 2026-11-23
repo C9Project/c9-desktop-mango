@@ -1,5 +1,10 @@
 # C9 desktop Mango
 
+Project account: [C9Project](https://github.com/C9Project).
+Maintainer: [c9_project@proton.me](mailto:c9_project@proton.me).
+The configured source-control remote is `https://github.com/C9Project/c9-desktop-mango.git`;
+the intended repository visibility is private. See [Source control](docs/SOURCE-CONTROL.md).
+
 **C9 0.2.0 now has a corrected ZFS installer.** The replacement ISO passed its server build and static verification on 22 November 2026 at 16:06:27 UTC. Its focused regression tests confirmed the home-dataset repair, unchanged user data and ownership checks, correct-ZFS no-op behavior, and UFS compatibility.
 
 The replacement copy on F: passed its full checksum check at 16:25:30 UTC. The user subsequently reported successful installation on the Dell Latitude 5591. A fresh replacement-ISO EFI/ZFS VM test was not run; detailed native graphics and application acceptance were not separately reported.
@@ -86,5 +91,5 @@ package updates from the existing LAN server.
 The [project baseline](docs/C9-Project-Description.md), historical references,
 and source records remain unchanged. They describe their recorded snapshots,
 not a completed 0.2.0 release. Each deployed source archive carries
-`MANIFEST.sha256` for its recorded inputs. Replace the reserved C9 maintainer
-address before publication.
+`MANIFEST.sha256` for its recorded inputs. The current C9 source uses the
+maintainer contact above; previously built packages retain their original metadata.

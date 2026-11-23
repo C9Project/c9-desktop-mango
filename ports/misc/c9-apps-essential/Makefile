@@ -3,7 +3,7 @@ PORTNAME=	c9-apps-essential
 DISTVERSION=	0.2.0
 CATEGORIES=	misc
 
-MAINTAINER=	maintainer@example.invalid
+MAINTAINER=	c9_project@proton.me
 COMMENT=	Browser, terminal, file manager, and PDF viewer for C9
 
 RUN_DEPENDS=	firefox>=0:www/firefox \

@@ -5,7 +5,7 @@ CATEGORIES=	x11
 MASTER_SITES=
 DISTFILES=
 
-MAINTAINER=	maintainer@example.invalid
+MAINTAINER=	c9_project@proton.me
 COMMENT=	Authenticated Mango session and preserved user defaults for C9
 LICENSE=	BSD2CLAUSE
 LICENSE_FILE=	${FILESDIR}/LICENSE

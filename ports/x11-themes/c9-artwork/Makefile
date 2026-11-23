@@ -5,7 +5,7 @@ CATEGORIES=	x11-themes
 MASTER_SITES=
 DISTFILES=
 
-MAINTAINER=	maintainer@example.invalid
+MAINTAINER=	c9_project@proton.me
 COMMENT=	Original C9 wallpaper and scalable logo
 
 LICENSE=	BSD2CLAUSE

@@ -5,7 +5,7 @@ CATEGORIES=	sysutils
 MASTER_SITES=
 DISTFILES=
 
-MAINTAINER=	maintainer@example.invalid
+MAINTAINER=	c9_project@proton.me
 COMMENT=	Explicit system setup for authenticated C9 desktop installations
 LICENSE=	BSD2CLAUSE
 LICENSE_FILE=	${FILESDIR}/LICENSE

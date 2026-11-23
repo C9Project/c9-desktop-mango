@@ -3,7 +3,7 @@ PORTNAME=	c9-apps-development
 DISTVERSION=	0.2.0
 CATEGORIES=	devel
 
-MAINTAINER=	maintainer@example.invalid
+MAINTAINER=	c9_project@proton.me
 COMMENT=	Optional editor and development tool selection for C9
 
 RUN_DEPENDS=	cmake-core>=0:devel/cmake-core \

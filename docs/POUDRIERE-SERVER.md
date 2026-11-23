@@ -96,7 +96,7 @@ were not implemented. They are now included in the 0.2.0 source and release
 list. The old source directory is retained; the latest record below identifies
 the current overlay registration.
 
-The maintainer address remains the documented private-build placeholder; replace it before publishing the port. This server record is an added operational document and is not covered by the original archive manifest.
+At this historical build, the maintainer address was the private-build placeholder. The current source contact was supplied on 23 November 2026; this does not alter the original packages. This server record is an added operational document and is not covered by the original archive manifest.
 ## Full build paused for shutdown — 13 November 2026
 
 The user requested a full source build with recursive package tests. Run `c9-20261113T144442Z` used `poudriere bulk -t -r`, the same jail, tree, overlay, and C9 set, and two builders. The user then requested a stop so the machine could be shut down.

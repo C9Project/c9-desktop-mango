@@ -1,5 +1,14 @@
 # Changelog
 
+## Project identity and source control — 23 November 2026
+
+- Set `c9_project@proton.me` as maintainer for the ten C9 ports and record the
+  C9Project GitHub account. Retain upstream port maintainer addresses.
+- Preserve the verified source as the Git baseline, with a separate contact
+  change and a private `C9Project/c9-desktop-mango` source-control remote.
+- Keep existing package versions and release artifacts unchanged. Cached
+  packages can retain their original contact metadata until a later release.
+
 ## Rebuild automation — 22 November 2026
 
 - Add a detached/foreground incremental package-to-ISO runner with retained

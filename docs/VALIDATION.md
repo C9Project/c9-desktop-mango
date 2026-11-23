@@ -1,5 +1,13 @@
 # Validation and release gates
 
+## Project contact and source control — 23 November 2026
+
+The source now uses `c9_project@proton.me` for all ten C9 port maintainers,
+with unchanged `DISTVERSION=0.2.0`, dependencies and upstream port maintainers.
+The verified source was preserved as Git tag `baseline-20261122` before this
+separate metadata change. See [Source control](SOURCE-CONTROL.md).
+Existing packages and ISOs were not rebuilt and retain their original metadata.
+
 ## Rebuild automation — 22 November 2026
 
 The new [automated runner](AUTOMATED-REBUILD.md) passed all twelve isolated
@@ -350,8 +358,8 @@ behavior still need their separate target-system tests.
 The package build and verification gates have recorded passing results.
 The isolated configuration and user-preservation fixtures above cover their
 stated cases; they do not establish installation, package-upgrade or graphical
-behavior. The reserved maintainer contact remains a separate publication
-limitation.
+behavior. These recorded packages retained the placeholder maintainer contact.
+The source contact was updated on 23 November; these artifacts were not rebuilt.
 
 ## Completed ISO and static artifact checks
 

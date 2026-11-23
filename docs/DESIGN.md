@@ -89,12 +89,17 @@ Mango graphics are separate evidence in [VALIDATION.md](VALIDATION.md).
 
 ## Maintenance
 
-Use `PORTREVISION` for changes without advancing the C9 release version, and
-reset it with a new `DISTVERSION`. Keep custom dependency versions and release
-inputs consistent. Coordinate kernel/module updates and preserve user edits.
+The current release gate requires every C9 package's full version to match
+`C9_VERSION`. Use the coordinated version procedure in
+[Customize and rebuild](CUSTOMIZE-AND-REBUILD.md) for packaged changes;
+an isolated `PORTREVISION` increment does not satisfy that gate.
+Keep custom dependency versions and release inputs consistent.
+Coordinate kernel/module updates and preserve user edits.
 Removing a meta-package does not automatically remove all dependencies or
 restore system configuration.
 
-Replace the reserved maintainer address and supply a real project homepage
-before public submission. Historical references and source records describe
-their earlier snapshot; they are not current dependency version locks.
+The C9 maintainer is `c9_project@proton.me`; the project account is
+[C9Project](https://github.com/C9Project). Source control is configured for a
+private repository; choose a publicly accessible project homepage before public ports
+submission. Historical references and source records describe their earlier
+snapshot; they are not current dependency version locks.

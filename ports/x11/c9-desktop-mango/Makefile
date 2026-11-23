@@ -5,8 +5,7 @@ PORTNAME=	c9-desktop-mango
 DISTVERSION=	0.2.0
 CATEGORIES=	x11
 
-# Reserved address for this private build; replace before publication.
-MAINTAINER=	maintainer@example.invalid
+MAINTAINER=	c9_project@proton.me
 COMMENT=	Mango desktop and authenticated session package selection for C9
 
 RUN_DEPENDS=	c9-artwork>=0.2.0:x11-themes/c9-artwork \

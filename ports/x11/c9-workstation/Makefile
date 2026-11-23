@@ -3,7 +3,7 @@ PORTNAME=	c9-workstation
 DISTVERSION=	0.2.0
 CATEGORIES=	x11
 
-MAINTAINER=	maintainer@example.invalid
+MAINTAINER=	c9_project@proton.me
 COMMENT=	Default C9 workstation desktop and essential applications
 
 RUN_DEPENDS=	c9-apps-essential>=0.2.0:misc/c9-apps-essential \

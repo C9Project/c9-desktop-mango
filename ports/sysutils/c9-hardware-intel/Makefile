@@ -3,7 +3,7 @@ PORTNAME=	c9-hardware-intel
 DISTVERSION=	0.2.0
 CATEGORIES=	sysutils
 
-MAINTAINER=	maintainer@example.invalid
+MAINTAINER=	c9_project@proton.me
 COMMENT=	Graphics packages for C9 on Dell Latitude 5591 with Intel UHD 630
 
 ONLY_FOR_ARCHS=	amd64
