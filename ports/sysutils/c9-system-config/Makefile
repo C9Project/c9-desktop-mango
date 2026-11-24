@@ -1,6 +1,6 @@
 # SPDX-License-Identifier: BSD-2-Clause
 PORTNAME=	c9-system-config
-DISTVERSION=	0.2.0
+DISTVERSION=	0.2.1
 CATEGORIES=	sysutils
 MASTER_SITES=
 DISTFILES=
@@ -10,7 +10,7 @@ COMMENT=	Explicit system setup for authenticated C9 desktop installations
 LICENSE=	BSD2CLAUSE
 LICENSE_FILE=	${FILESDIR}/LICENSE
 
-RUN_DEPENDS=	c9-desktop-defaults>=0.2.0:x11/c9-desktop-defaults \
+RUN_DEPENDS=	c9-desktop-defaults>=0.2.1:x11/c9-desktop-defaults \
 		Xorg:x11-servers/xorg-server \
 		xf86-input-libinput>=0:x11-drivers/xf86-input-libinput \
 		sddm:x11/sddm \

@@ -1,9 +1,11 @@
-# C9 0.2.0 design
+# C9 0.2.1 source design
 
 C9 separates package selection, installed configuration and installation.
-The source implements each part; integration awaits the 0.2.0 package build
-and runtime acceptance. The unchanged [project description](C9-Project-Description.md)
-remains the baseline.
+This branch prepares Rio terminal defaults for 0.2.1 through source changes
+and local checks only. The completed 0.2.0 package/ISO results are retained;
+no 0.2.1 package build, ISO or runtime acceptance is claimed. The unchanged
+[project description](C9-Project-Description.md) remains the baseline.
+See [Rio terminal](RIO-TERMINAL.md) for the change and migration scope.
 
 ## Dependency-only packages
 
@@ -11,7 +13,7 @@ remains the baseline.
 | --- | --- |
 | `x11/c9-workstation` | Desktop plus Essential applications |
 | `x11/c9-desktop-mango` | Mango, SDDM, desktop utilities, portals, fonts and C9 configuration/artwork |
-| `misc/c9-apps-essential` | Firefox, Foot, Thunar, Zathura and MuPDF plugin |
+| `misc/c9-apps-essential` | Firefox, Rio, Thunar, Zathura and MuPDF plugin |
 | `devel/c9-apps-development` | VS Code, Git, CMake, Python, Node.js 24 and matching npm |
 | `editors/c9-apps-office` | LibreOffice |
 | `emulators/c9-hardware-virtualbox` | VirtualBox 7.2 Xorg guest additions and Xorg |
@@ -39,7 +41,7 @@ These regular ports declare their files in `pkg-plist`. Configuration packages
 fetch no external source. The artwork package uses the pinned tree's librsvg
 to render its original SVG at fixed dimensions without external fonts/assets.
 Original C9 source and artwork use BSD-2-Clause; dependency licenses remain
-independent. All C9 ports are version `0.2.0`.
+independent. All C9 ports in this branch are version `0.2.1`.
 
 Package installation does not enable services or change accounts. Explicit
 `c9-system-setup --profile intel|virtualbox` configures the target, including
@@ -63,6 +65,9 @@ Mango stops that group on logout. Portals use D-Bus activation; no global
 `killall` is used. User templates fill only missing paths and preserve existing
 settings and symlinks. [DESKTOP.md](DESKTOP.md) documents shortcuts and the
 Mango 0.18.5/Waybar 0.16.0 integration with primary source references.
+Fresh templates launch Rio; existing Mango/Fuzzel files retain their current
+terminal commands until the user opts into migration. The standard pinned
+FreeBSD Rio port uses its CPU renderer; no custom GPU-feature override is added.
 
 Intel targets the specified Dell/UHD630 with matched p6 kernel modules.
 VirtualBox is limited to installer and authenticated-login testing. No nested
@@ -73,8 +78,15 @@ Mango session, alternate compositor or AMD profile is included.
 The partial overlay is combined with the recorded full ports tree. It does
 not replace category indexes. The build wrapper checks inputs and idle state,
 registers the overlay, then builds/tests the complete release list. Compatible
-existing packages are reused. The running 0.1.0 build keeps its inputs until
-completion; 0.2.0 is deployed in a separate source directory.
+existing packages are reused. Keep active builds' inputs unchanged. The
+retained server checkout and published packages remain 0.2.0; this source-only
+candidate has not changed the live overlay or repository.
+
+The candidate retains the exact p6 platform and kernel/base preparation
+records. Its combined installation count is `unreviewed`, so ISO acceptance
+must fail until a future candidate's actual dependency plan is reviewed and
+the explicit expected count is recorded. The earlier 545-package result
+belongs to 0.2.0 and is not evidence for the Rio dependency set.
 
 The installer source combines matching patched FreeBSD base/kernel files and
 a completed signed repository. It retains bsdinstall's interactive disk and

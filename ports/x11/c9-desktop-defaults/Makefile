@@ -1,6 +1,6 @@
 # SPDX-License-Identifier: BSD-2-Clause
 PORTNAME=	c9-desktop-defaults
-DISTVERSION=	0.2.0
+DISTVERSION=	0.2.1
 CATEGORIES=	x11
 MASTER_SITES=
 DISTFILES=
@@ -10,10 +10,10 @@ COMMENT=	Authenticated Mango session and preserved user defaults for C9
 LICENSE=	BSD2CLAUSE
 LICENSE_FILE=	${FILESDIR}/LICENSE
 
-RUN_DEPENDS=	c9-artwork>=0.2.0:x11-themes/c9-artwork \
+RUN_DEPENDS=	c9-artwork>=0.2.1:x11-themes/c9-artwork \
 		dbus-run-session:devel/dbus \
 		mango>=0.18.5:x11-wm/mango \
-		foot:x11/foot \
+		rio:x11/rio \
 		fuzzel:x11/fuzzel \
 		mako:x11/mako \
 		swaybg:x11/swaybg \
@@ -32,6 +32,8 @@ do-install:
 	${INSTALL_SCRIPT} ${FILESDIR}/${script} ${STAGEDIR}${PREFIX}/bin/
 .endfor
 	${INSTALL_SCRIPT} ${FILESDIR}/session-apps ${STAGEDIR}${PREFIX}/libexec/c9/
+	${MKDIR} ${STAGEDIR}${PREFIX}/share/applications
+	${INSTALL_DATA} ${FILESDIR}/c9-rio.desktop ${STAGEDIR}${PREFIX}/share/applications/
 	${MKDIR} ${STAGEDIR}${DATADIR}/skel/.config
 	(cd ${FILESDIR}/skel && ${COPYTREE_SHARE} . ${STAGEDIR}${DATADIR}/skel)
 	${MKDIR} ${STAGEDIR}${PREFIX}/share/c9/sessions/wayland \

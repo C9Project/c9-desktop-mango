@@ -5,19 +5,21 @@ Maintainer: [c9_project@proton.me](mailto:c9_project@proton.me).
 The configured source-control remote is `https://github.com/C9Project/c9-desktop-mango.git`;
 the intended repository visibility is private. See [Source control](docs/SOURCE-CONTROL.md).
 
-**C9 0.2.0 now has a corrected ZFS installer.** The replacement ISO passed its server build and static verification on 22 November 2026 at 16:06:27 UTC. Its focused regression tests confirmed the home-dataset repair, unchanged user data and ownership checks, correct-ZFS no-op behavior, and UFS compatibility.
+**This branch prepares C9 0.2.1 with Rio as the default terminal.** Its scope is source changes and local checks only: it has not been deployed, built into packages, or assembled into an ISO. The existing server and 0.2.0 artifacts remain unchanged. See [Rio terminal](docs/RIO-TERMINAL.md) for the pinned package, defaults, validation limits and opt-in migration for existing users.
+
+**The latest built release is C9 0.2.0 with the corrected ZFS installer.** The replacement ISO passed its server build and static verification on 22 November 2026 at 16:06:27 UTC. Its focused regression tests confirmed the home-dataset repair, unchanged user data and ownership checks, correct-ZFS no-op behavior, and UFS compatibility.
 
 The replacement copy on F: passed its full checksum check at 16:25:30 UTC. The user subsequently reported successful installation on the Dell Latitude 5591. A fresh replacement-ISO EFI/ZFS VM test was not run; detailed native graphics and application acceptance were not separately reported.
 
 All ten C9 0.2.0 packages and their dependencies already passed the full release gate, including the signed 545-package installation plan. The installer repair reused those packages and the exact p6 kernel/base payload. All 106 port files and their metadata remained unchanged.
 
-Use [Automated rebuild](docs/AUTOMATED-REBUILD.md) to run packages through a verified ISO with one command and reuse compatible packages. [Customize and rebuild](docs/CUSTOMIZE-AND-REBUILD.md) explains changes to packages, defaults or the installer. The [quick start](docs/QUICKSTART.md) gives the current ISO path and checksum. The original ISO's BIOS/EFI **UFS** installation/authentication tests remain historical evidence. A paused original-ISO installation can be resumed with the [ZFS recovery steps](docs/ZFS-INSTALL-RECOVERY.md).
+For a future approved build, [Automated rebuild](docs/AUTOMATED-REBUILD.md) runs packages through ISO verification and reuses compatible packages. The 0.2.1 dependency count is deliberately `unreviewed`; acceptance will stop until the new installation plan is reviewed. [Customize and rebuild](docs/CUSTOMIZE-AND-REBUILD.md) explains that gate and the release workflow. The [quick start](docs/QUICKSTART.md) gives the existing 0.2.0 ISO path and checksum. The original ISO's BIOS/EFI **UFS** installation/authentication tests remain historical evidence. A paused original-ISO installation can be resumed with the [ZFS recovery steps](docs/ZFS-INSTALL-RECOVERY.md).
 
 The recovered source is `F:\C9\source\c9-desktop-mango-0.2.0-zfs-20261122T153649Z`. E: reported hardware I/O errors and remains untouched. The requested replacement ISO destination is `F:\C9\releases\c9-0.2.0-zfs-20261122T153649Z\C9MANGO020.iso`.
 
 C9 assembles a Mango desktop through FreeBSD packages. SDDM requires a regular
 user's password; automatic login and root desktop sessions are excluded.
-The default workstation includes Waybar, Fuzzel, Mako, Swaybg, Foot, Firefox,
+The 0.2.1 source selects Waybar, Fuzzel, Mako, Swaybg, Rio, Firefox,
 Thunar, and Zathura. Development and Office are optional application groups.
 Existing user configuration is preserved.
 
@@ -32,7 +34,7 @@ by this Mango renderer. Physical graphics validation is a separate requirement.
 | --- | --- |
 | `c9-workstation` | Desktop plus Essential applications |
 | `c9-desktop-mango` | Mango, SDDM, desktop utilities, portals, C9 configuration/artwork |
-| `c9-apps-essential` | Firefox, Foot, Thunar, Zathura and its MuPDF plugin |
+| `c9-apps-essential` | Firefox, Rio, Thunar, Zathura and its MuPDF plugin |
 | `c9-apps-development` | Optional VS Code, Git, CMake, Python, Node.js and npm |
 | `c9-apps-office` | Optional LibreOffice |
 | `c9-desktop-defaults` | Native session, user initializer and templates |
@@ -41,22 +43,28 @@ by this Mango renderer. Physical graphics validation is a separate requirement.
 | `c9-hardware-intel` | Dell/UHD630 DRM module and firmware selection |
 | `c9-hardware-virtualbox` | Xorg and guest additions for installer/login tests |
 
-All C9 ports use version `0.2.0`. Original C9 source is BSD-2-Clause licensed;
+All C9 ports in this branch use version `0.2.1`. Original C9 source is BSD-2-Clause licensed;
 dependency packages retain their own licenses. `ports/` is a partial overlay
 requiring the complete pinned FreeBSD ports tree. It contains no prebuilt
 packages or fetched upstream sources.
 
 ## Build packages first
 
+No server operation is part of this source-only candidate. The commands below
+describe the retained **0.2.0** server checkout; do not deploy this branch over
+it or use its completed package build as a 0.2.1 release. Review the
+[Rio guide](docs/RIO-TERMINAL.md) and release gates before a future build.
+
 The server is reached with `ssh daniel@192.168.178.55`; root commands use
-`doas`. The initial 0.1.0 recursive build completed successfully, and the
-expanded 0.2.0 build reuses its packages. Keep any active run's source,
+`doas`. The initial 0.1.0 recursive build and expanded 0.2.0 build completed
+successfully, reusing compatible packages. Keep any active run's source,
 overlay and configuration unchanged until it finishes. Reviewed dependency
 repairs and their validation are documented in
 [local port repairs](docs/PORTS-PATCHES.md).
 
-Deploy the completed 0.2.0 source under
-`/usr/local/c9/c9-desktop-mango-0.2.0`. Once the C9 build jail is idle:
+The retained 0.2.0 source is under
+`/usr/local/c9/c9-desktop-mango-0.2.0`. To repeat that release when authorized
+and the C9 build jail is idle:
 
 ```sh
 cd /usr/local/c9/c9-desktop-mango-0.2.0
@@ -76,6 +84,7 @@ package updates from the existing LAN server.
 
 ## Documentation
 
+- [Rio terminal](docs/RIO-TERMINAL.md): 0.2.1 source candidate, pinned Rio defaults, migration and pending release checks.
 - [Automated rebuild](docs/AUTOMATED-REBUILD.md): detached package-to-ISO runner, reuse, status, logs and retries.
 - [Customize and rebuild](docs/CUSTOMIZE-AND-REBUILD.md): where to edit, version changes, deployment, package builds and a matching ISO.
 - [Quick start](docs/QUICKSTART.md): use the existing ISO, install C9 or repeat the build.

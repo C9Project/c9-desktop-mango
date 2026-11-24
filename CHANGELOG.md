@@ -1,5 +1,16 @@
 # Changelog
 
+## 0.2.1 Rio terminal candidate — 23 November 2026
+
+- Replace Foot dependencies with the pinned Rio terminal port in Essential,
+  Mango desktop and desktop defaults; coordinate all C9 versions at 0.2.1.
+- Add C9 Rio configuration and an application launcher; update the new-user
+  Mango shortcut and Fuzzel terminal command while preserving existing files.
+- Prepare C9MANGO021 verification and require review of the new dependency
+  count. Retain the FreeBSD baseline, approved resource settings and old proofs.
+- This is a source candidate. Package builds, a new ISO and native Rio runtime
+  acceptance remain pending; see docs/RIO-TERMINAL.md.
+
 ## Project identity and source control — 23 November 2026
 
 - Set `c9_project@proton.me` as maintainer for the ten C9 ports and record the

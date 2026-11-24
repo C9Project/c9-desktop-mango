@@ -1,4 +1,4 @@
-C9's Mango desktop combines the compositor, Foot, Waybar, Fuzzel, Mako,
+C9's Mango desktop combines the compositor, Rio, Waybar, Fuzzel, Mako,
 Swaybg, fonts, clipboard and XDG tools, desktop portals, seat management,
 and an SDDM login screen. Regular C9 packages own the session defaults,
 artwork, and explicit system setup utility.

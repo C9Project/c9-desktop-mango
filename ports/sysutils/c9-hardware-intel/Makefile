@@ -1,6 +1,6 @@
 # SPDX-License-Identifier: BSD-2-Clause
 PORTNAME=	c9-hardware-intel
-DISTVERSION=	0.2.0
+DISTVERSION=	0.2.1
 CATEGORIES=	sysutils
 
 MAINTAINER=	c9_project@proton.me

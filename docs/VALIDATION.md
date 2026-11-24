@@ -1,5 +1,28 @@
 # Validation and release gates
 
+## 0.2.1 Rio source candidate — 23 November 2026
+
+The source-only change replaces Foot with Rio and prepares coordinated 0.2.1
+C9 packages. It has not been deployed, compiled into packages, installed on the
+Dell or assembled into a new ISO. The server was unreachable and the user
+selected local source checks only.
+
+Local Python 3.13.14 checks passed for all ten release versions and internal
+constraints, the three Rio dependencies, TOML syntax, agreement of template/
+initializer/plist inventories, and Mango/Fuzzel/application-launcher commands.
+Evidence: `F:\C9\rio-source-checks\terminal-static-final-002\RESULTS.json`.
+Test SHA-256: `3b57c53661749982df3bdf421bb7b7c0b30c1738975488c21d1fc02289e34a22`.
+Git Bash syntax checks passed for the edited initializer, release configuration
+and ISO verifier. These checks are not FreeBSD shell/runtime or Rio schema tests.
+
+The new test's optional FreeBSD initializer fixtures were **not run**. Native
+Rio rendering, package builds, installation/upgrade behavior and ISO acceptance
+remain pending. The historical 0.2.0 installed-evidence collector is unchanged.
+The 0.2.1 ISO verifier requires the pinned Rio package and refuses final
+acceptance while `C9_EXPECTED_INSTALL_PACKAGE_COUNT=unreviewed`; the former
+545-package count is retained only as historical evidence. See
+[Rio terminal](RIO-TERMINAL.md) for the later acceptance and user-migration steps.
+
 ## Project contact and source control — 23 November 2026
 
 The source now uses `c9_project@proton.me` for all ten C9 port maintainers,

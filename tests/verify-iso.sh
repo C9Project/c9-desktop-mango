@@ -1,5 +1,5 @@
 #!/bin/sh
-# Verify the finished C9 0.2.0 ISO without installing packages or booting it.
+# Verify the finished C9 0.2.1 ISO without installing packages or booting it.
 # Only the new evidence directory is written. Both image mounts are read-only.
 set -eu
 set -o pipefail
@@ -42,6 +42,7 @@ case "$kernel_build_id" in *[!a-zA-Z0-9_.-]*|.|..) fail 'Invalid kernel build ID
 release=$(realpath "$release")
 kernel_record=$(realpath "$kernel_record")
 project=$(realpath "$project")
+. "$project/installer/release.conf"
 parent=$(realpath "$(dirname "$output")")
 [ "$(stat -f %u "$parent")" = 0 ] || fail 'Evidence parent must belong to root.'
 parent_mode=$(stat -f %Lp "$parent")
@@ -49,7 +50,7 @@ parent_mode=$(stat -f %Lp "$parent")
 output="$parent/$(basename "$output")"
 case "$output/" in "$release/"*|"$kernel_record/"*|"$project/"*) fail 'Evidence must be separate from build inputs and outputs.' ;; esac
 [ ! -e "$output" ] && [ ! -L "$output" ] || fail 'Evidence directory exists; preserve it and use a new one.'
-iso="$release/C9MANGO020.iso"
+iso="$release/C9MANGO021.iso"
 inputs="$release/inputs"
 [ -s "$iso" ] && [ -s "$release/SHA256" ] && [ -s "$release/SHA512" ] || fail 'Finished ISO and both checksums are required.'
 [ "$(cat "$kernel_record/exit-status")" = 0 ] &&
@@ -97,7 +98,7 @@ iso_hash=$(sha256 -q "$iso")
 printf '%s\n' "$iso_hash" > "$output/iso.sha256"
 [ "$(dd if="$iso" bs=1 skip=510 count=2 2>/dev/null | od -An -tx1 | tr -d ' \n')" = 55aa ] || fail 'Protective MBR signature is missing.'
 [ "$(dd if="$iso" bs=1 skip=512 count=8 2>/dev/null)" = 'EFI PART' ] || fail 'Primary GPT signature is missing.'
-[ "$(dd if="$iso" bs=1 skip=32808 count=32 2>/dev/null | sed 's/ *$//')" = C9MANGO020 ] || fail 'ISO volume label differs.'
+[ "$(dd if="$iso" bs=1 skip=32808 count=32 2>/dev/null | sed 's/ *$//')" = C9MANGO021 ] || fail 'ISO volume label differs.'
 etdump --format shell "$iso" > "$output/el-torito.txt" 2> "$output/el-torito.stderr"
 # etdump can warn about a bad catalog but still return zero.
 [ ! -s "$output/el-torito.stderr" ] || fail 'El Torito catalog emitted warnings.'
@@ -145,7 +146,7 @@ shared="$live/usr/local/share/c9"
 [ "$(cat "$shared/packages/.buildname")" = "$build_id" ] || fail 'Bundled repository generation differs.'
 [ "$(cat "$shared/packages/.jailversion")" = 15.1-RELEASE-p6 ] || fail 'Bundled repository jail revision differs.'
 [ "$(cat "$shared/build/freebsd-version")" = 15.1-RELEASE-p6 ] || fail 'Recorded base revision differs.'
-[ "$(cat "$shared/build/c9-version")" = 0.2.0 ] || fail 'Recorded C9 revision differs.'
+[ "$(cat "$shared/build/c9-version")" = 0.2.1 ] || fail 'Recorded C9 revision differs.'
 [ "$(cat "$shared/build/ports-revision")" = e7bc56a5d30dc24ce2e7990926836699cbd34e55 ] || fail 'Recorded ports commit differs.'
 for path in etc/rc.local etc/rc.conf boot/loader.conf usr/libexec/bsdinstall/local.post-configure usr/local/libexec/c9/install-target usr/local/libexec/c9/eligible-users.awk usr/local/libexec/c9/prepare-user-homes; do
     cmp "$project/installer/overlay/$path" "$live/$path" || fail "Installer overlay differs: $path"
@@ -158,7 +159,7 @@ cmp "$live/usr/libexec/bsdinstall/auto.freebsd" "$shared/build/bsdinstall-auto.f
 awk -f "$project/installer/patch-auto.awk" "$live/usr/libexec/bsdinstall/auto.freebsd" > "$output/auto.expected"
 cmp "$output/auto.expected" "$live/usr/libexec/bsdinstall/auto" || fail 'Patched bsdinstall hooks differ.'
 [ "$(readlink "$live/etc/resolv.conf")" = /tmp/bsdinstall_etc/resolv.conf ] || fail 'Live resolver symlink differs.'
-awk '$1 == "/dev/iso9660/C9MANGO020" && $2 == "/" && $3 == "cd9660" && $4 == "ro" {root++}
+awk '$1 == "/dev/iso9660/C9MANGO021" && $2 == "/" && $3 == "cd9660" && $4 == "ro" {root++}
      $1 == "tmpfs" && $2 == "/tmp" && $3 == "tmpfs" {tmp++}
      END {exit (root != 1 || tmp != 1)}' "$live/etc/fstab" || fail 'Live media mount entries differ.'
 for file in C9.conf install.conf poudriere.cert; do cmp "$shared/$file" "$inputs/$file"; done
@@ -261,23 +262,30 @@ repo_pkg update -f > "$output/catalog.log" 2>&1
 repo_pkg rquery -U -r C9ISO '%n|%v|%o' > "$output/package-inventory.txt"
 awk -F '|' '$1 ~ /^c9-/' "$output/package-inventory.txt" | sort > "$output/c9-actual.txt"
 cat > "$output/c9-expected.txt" <<'EOF'
-c9-apps-development|0.2.0|devel/c9-apps-development
-c9-apps-essential|0.2.0|misc/c9-apps-essential
-c9-apps-office|0.2.0|editors/c9-apps-office
-c9-artwork|0.2.0|x11-themes/c9-artwork
-c9-desktop-defaults|0.2.0|x11/c9-desktop-defaults
-c9-desktop-mango|0.2.0|x11/c9-desktop-mango
-c9-hardware-intel|0.2.0|sysutils/c9-hardware-intel
-c9-hardware-virtualbox|0.2.0|emulators/c9-hardware-virtualbox
-c9-system-config|0.2.0|sysutils/c9-system-config
-c9-workstation|0.2.0|x11/c9-workstation
+c9-apps-development|0.2.1|devel/c9-apps-development
+c9-apps-essential|0.2.1|misc/c9-apps-essential
+c9-apps-office|0.2.1|editors/c9-apps-office
+c9-artwork|0.2.1|x11-themes/c9-artwork
+c9-desktop-defaults|0.2.1|x11/c9-desktop-defaults
+c9-desktop-mango|0.2.1|x11/c9-desktop-mango
+c9-hardware-intel|0.2.1|sysutils/c9-hardware-intel
+c9-hardware-virtualbox|0.2.1|emulators/c9-hardware-virtualbox
+c9-system-config|0.2.1|sysutils/c9-system-config
+c9-workstation|0.2.1|x11/c9-workstation
 EOF
 cmp "$output/c9-expected.txt" "$output/c9-actual.txt" || fail 'The ten C9 package identities/versions differ.'
+grep -Fqx 'rio-terminal-emulator|0.5.30|x11/rio' "$output/package-inventory.txt" ||
+    fail 'The pinned Rio terminal package is missing or differs.'
 required="pkg $(cut -d '|' -f 1 "$output/c9-expected.txt" | tr '\n' ' ')"
 # A file:// repository validates archives in place. No host package is installed.
 repo_pkg fetch -d -y -r C9ISO $required > "$output/fetch.log" 2>&1
 repo_pkg install -n -y -U -r C9ISO $required > "$output/install-plan.txt" 2>&1
-grep -qx 'Number of packages to be installed: 545' "$output/install-plan.txt" || fail 'Combined install plan differs from the verified 545-package release.'
+case ${C9_EXPECTED_INSTALL_PACKAGE_COUNT:-unreviewed} in
+    ''|*[!0-9]*|0) fail "C9 0.2.1 dependency count is not reviewed. Inspect $output/install-plan.txt and record a reviewed positive C9_EXPECTED_INSTALL_PACKAGE_COUNT before release acceptance." ;;
+esac
+[ "$C9_EXPECTED_INSTALL_PACKAGE_COUNT" -gt 0 ] || fail 'Expected install count must be positive.'
+grep -qx "Number of packages to be installed: $C9_EXPECTED_INSTALL_PACKAGE_COUNT" "$output/install-plan.txt" ||
+    fail 'Combined install plan differs from the reviewed release count.'
 pkg_name=$(repo_pkg rquery -U -r C9ISO '%n-%v' pkg)
 pkg_archive="$shared/packages/All/$pkg_name.pkg"
 pkg_member=$(tar -tf "$pkg_archive" | awk '$0 == "/usr/local/sbin/pkg-static" || $0 == "usr/local/sbin/pkg-static" || $0 == "./usr/local/sbin/pkg-static" {print}')

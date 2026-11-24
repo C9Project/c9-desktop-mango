@@ -1,6 +1,6 @@
 # SPDX-License-Identifier: BSD-2-Clause
 PORTNAME=	c9-artwork
-DISTVERSION=	0.2.0
+DISTVERSION=	0.2.1
 CATEGORIES=	x11-themes
 MASTER_SITES=
 DISTFILES=

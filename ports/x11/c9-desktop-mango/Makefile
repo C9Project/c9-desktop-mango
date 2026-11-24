@@ -2,18 +2,18 @@
 # C9 0.2 provides a complete package selection; configuration is owned by
 # regular ports and applied deliberately by c9-system-setup.
 PORTNAME=	c9-desktop-mango
-DISTVERSION=	0.2.0
+DISTVERSION=	0.2.1
 CATEGORIES=	x11
 
 MAINTAINER=	c9_project@proton.me
 COMMENT=	Mango desktop and authenticated session package selection for C9
 
-RUN_DEPENDS=	c9-artwork>=0.2.0:x11-themes/c9-artwork \
-		c9-desktop-defaults>=0.2.0:x11/c9-desktop-defaults \
-		c9-system-config>=0.2.0:sysutils/c9-system-config \
+RUN_DEPENDS=	c9-artwork>=0.2.1:x11-themes/c9-artwork \
+		c9-desktop-defaults>=0.2.1:x11/c9-desktop-defaults \
+		c9-system-config>=0.2.1:sysutils/c9-system-config \
 		dbus>=0:devel/dbus \
 		dejavu>=0:x11-fonts/dejavu \
-		foot>=0:x11/foot \
+		rio-terminal-emulator>=0:x11/rio \
 		fuzzel>=0:x11/fuzzel \
 		mako>=0:x11/mako \
 		mango>=0:x11-wm/mango \
